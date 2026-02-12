@@ -3,7 +3,7 @@
   "displayName": "cosmosdb-toolkit",
   "description": "VS Code extension for Cosmos DB server-side JavaScript development.",
   "publisher": "wayne-blackmon",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.109.0"
   },
