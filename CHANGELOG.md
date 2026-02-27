@@ -17,3 +17,4 @@ Versions are automatically incremented via the check‑in script.
 - Versioning pipeline using `VERSION` + automated CHANGELOG insertion
 
 
+

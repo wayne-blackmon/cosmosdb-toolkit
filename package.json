@@ -3,7 +3,7 @@
   "displayName": "cosmosdb-toolkit",
   "description": "VS Code extension for Cosmos DB server-side JavaScript development.",
   "publisher": "wayne-blackmon",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.109.0"
   },
@@ -11,10 +11,32 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onCommand:cosmosdb.openScratchpad"
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "languages": [
+      {
+        "id": "javascript",
+        "aliases": [
+          "JavaScript",
+          "javascript"
+        ],
+        "extensions": [
+          ".js"
+        ]
+      },
+      {
+        "id": "typescript",
+        "aliases": [
+          "TypeScript",
+          "typescript"
+        ],
+        "extensions": [
+          ".ts"
+        ]
+      }
+    ],
     "commands": [
       {
         "command": "cosmosdb-toolkit.openScratchpad",
@@ -29,7 +51,7 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
     "@types/vscode": "^1.109.0",

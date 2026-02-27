@@ -22,6 +22,9 @@ function sampleSproc(input) {
   const collection = context.getCollection();
   const response = context.getResponse();
 
+  const ctx = cosmos.server.context();
+  const coll = ctx.getCollection();
+
   // Write your logic here
   // response.setBody({ ok: true, input });
 }
