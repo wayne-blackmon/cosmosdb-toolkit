@@ -14,7 +14,9 @@ Versions are automatically incremented via the check‑in script.
 - Command palette integration (`cosmosdb-toolkit.openScratchpad`)
 - Deterministic activation model (Dev / Prod / Test)
 - Cross‑platform test suite stabilization
+- Advanced VS Code testing setup (Mocha bootstrap, suite/index, deterministic ordering)
 - Versioning pipeline using `VERSION` + automated CHANGELOG insertion
+
 
 
 

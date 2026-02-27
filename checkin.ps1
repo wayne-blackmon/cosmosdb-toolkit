@@ -8,7 +8,25 @@
     - Updates VERSION, package.json, and CHANGELOG.md
     - Runs compile, lint, test
     - Commits and pushes
+
+.USAGE
+    .\checkin.ps1 [-Message "your commit message"]
+
+.EXAMPLES
+    .\checkin.ps1
+        Runs the full pipeline using the default commit message "checkpoint".
+
+    .\checkin.ps1 -Message "test suite: advanced setup complete"
+        Bumps version, updates CHANGELOG, compiles, lints, tests,
+        commits with the provided message, rebases, and pushes.
+
+.NOTES
+    - VERSION is auto-incremented (patch with cascading rollover).
+    - CHANGELOG.md is updated by inserting a new version block above [Unreleased].
+    - package.json version is kept in sync with VERSION.
+    - The script stops immediately on build, lint, or test failure.
 #>
+
 
 param(
     [Parameter(Mandatory = $false)]
@@ -68,12 +86,18 @@ if (-not (Test-Path $changelog)) {
         "## [$newVersion] - Unreleased"
         ""
     ) | Out-File $changelog -Encoding utf8
-} else {
+}
+else {
     Write-Host "Updating CHANGELOG.md..." -ForegroundColor DarkCyan
 
     $content = Get-Content $changelog -Raw
 
-    # Insert new version header at the top after the main title
+    # FIXED REGEX — matches:
+    #   ## [Unreleased]
+    #   ## [0.0.3]
+    #   ## [anything]
+    #
+    # Inserts new version block ABOVE the first version header.
     $updated = $content -replace "(## 
 
 \[.*?\]
