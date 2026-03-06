@@ -1,27 +1,24 @@
-import typescriptEslint from "typescript-eslint";
+// eslint.config.mjs
 
-export default [{
-    files: ["**/*.ts"],
-}, {
-    plugins: {
-        "@typescript-eslint": typescriptEslint.plugin,
-    },
+import tseslint from '@typescript-eslint/eslint-plugin'
+import parser from '@typescript-eslint/parser'
 
+export default [
+  {
+    ignores: ['.vscode-test/**']
+  },
+
+  {
+    files: ['**/*.ts'],
     languageOptions: {
-        parser: typescriptEslint.parser,
-        ecmaVersion: 2022,
-        sourceType: "module",
+      parser
     },
-
+    plugins: {
+      '@typescript-eslint': tseslint
+    },
     rules: {
-        "@typescript-eslint/naming-convention": ["warn", {
-            selector: "import",
-            format: ["camelCase", "PascalCase"],
-        }],
-
-        curly: "warn",
-        eqeqeq: "warn",
-        "no-throw-literal": "warn",
-        semi: "warn",
-    },
-}];
+      quotes: ['error', 'single'],
+      semi: ['error', 'never']
+    }
+  }
+]

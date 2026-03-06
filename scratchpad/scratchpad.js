@@ -3,11 +3,28 @@
 // IntelliSense is powered by the extension's metadata.
 
 // ---------------------------------------------------------------------------
-// Virtual API namespace for IntelliSense
+// Parameter Variables (assigned values)
 // ---------------------------------------------------------------------------
 
-// @ts-ignore
-const cosmos = globalThis.__cosmosToolkitApi || {};
+let docId = "myDocId";
+let partitionKey = "myPartitionKey";
+
+let docBody = { type: "sample", value: 42 };
+
+let query = "SELECT * FROM c WHERE c.type = @type";
+let params = [{ name: "@type", value: "sample" }];
+
+let options = { enableScanInQuery: true, maxItemCount: 10 };
+
+let limit = 100;
+let continuation = null;
+
+let collectionLink = "dbs/mydb/colls/mycoll";
+
+function callback(err, resources, responseOptions) {
+  if (err) throw err;
+  // Handle results here
+}
 
 // ---------------------------------------------------------------------------
 // Stored Procedure Template
@@ -18,13 +35,27 @@ const cosmos = globalThis.__cosmosToolkitApi || {};
  * @param {any} input - Input payload
  */
 function sampleSproc(input) {
-  const context = cosmos.server.context();
+  const context = getContext();
   const collection = context.getCollection();
+  const request = context.getRequest();
   const response = context.getResponse();
 
-  const ctx = cosmos.server.context();
-  const coll = ctx.getCollection();
+  collection.queryDocuments(collectionLink, )
+  collection.createDocument(collectionLink, )
 
-  // Write your logic here
-  // response.setBody({ ok: true, input });
+  // Query documents
+  // collection.queryDocuments(
+  //   collectionLink,
+  //   { query, parameters: params },
+  //   options,
+  //   callback
+  // );
+
+  // Create a document
+  // collection.createDocument(collectionLink, docBody, options, callback);
+
+  // Read a document
+  // collection.readDocument(documentLink, options, callback);
+
+  // response.setBody(input);
 }

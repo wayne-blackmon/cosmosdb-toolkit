@@ -1,51 +1,55 @@
-import * as vscode from 'vscode';
-import { cosmosApi } from './metadata/cosmosApi';
+// src/providers/CosmosCompletionProvider.ts
+
+import * as vscode from 'vscode'
+import { cosmosApi, ApiFunction } from './metadata/cosmosApi'
 
 export class CosmosCompletionProvider implements vscode.CompletionItemProvider {
   provideCompletionItems(
     document: vscode.TextDocument,
     position: vscode.Position,
-    token: vscode.CancellationToken,
   ): vscode.ProviderResult<vscode.CompletionItem[]> {
-    const line = document.lineAt(position).text;
-    const prefix = line.substring(0, position.character).trim();
+    const line = document.lineAt(position).text
+    const prefix = line.substring(0, position.character).trim()
 
-    // Context API surface
+    // Context API
     if (prefix.endsWith('getContext().')) {
-      return this.buildItems(cosmosApi.context.functions);
+      return this.buildItems(cosmosApi.context.functions)
     }
 
-    // Collection API surface
+    // Collection API
     if (prefix.endsWith('getCollection().') || prefix.endsWith('collection.')) {
-      return this.buildItems(cosmosApi.collection.functions);
+      return this.buildItems(cosmosApi.collection.functions)
     }
 
-    // Response API surface
+    // Request API
+    if (prefix.endsWith('getRequest().') || prefix.endsWith('request.')) {
+      return this.buildItems(cosmosApi.request.functions)
+    }
+
+    // Response API
     if (prefix.endsWith('getResponse().') || prefix.endsWith('response.')) {
-      return this.buildItems(cosmosApi.response.functions);
+      return this.buildItems(cosmosApi.response.functions)
     }
 
-    // Top-level suggestions (context API)
-    return this.buildItems(cosmosApi.context.functions);
+    // Default: top-level context API
+    return this.buildItems(cosmosApi.context.functions)
   }
 
-  private buildItems(funcs: any[]): vscode.CompletionItem[] {
+  private buildItems(funcs: ApiFunction[]): vscode.CompletionItem[] {
     return funcs.map((fn) => {
       const item = new vscode.CompletionItem(
         fn.label,
         vscode.CompletionItemKind.Function,
-      );
+      )
 
-      item.detail = fn.detail;
-      item.documentation = new vscode.MarkdownString(fn.documentation);
+      item.detail = fn.detail
+      item.documentation = new vscode.MarkdownString(fn.documentation)
 
-      // Ranking + filtering behavior
-      item.sortText = '0000';
-      item.preselect = true;
-      item.filterText = fn.label;
-      item.commitCharacters = ['('];
+      item.sortText = '0000'
+      item.preselect = true
+      item.commitCharacters = ['(']
 
-      return item;
-    });
+      return item
+    })
   }
 }

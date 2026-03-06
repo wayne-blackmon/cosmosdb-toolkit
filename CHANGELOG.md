@@ -15,8 +15,7 @@ Versions are automatically incremented via the check‑in script.
 - Deterministic activation model (Dev / Prod / Test)
 - Cross‑platform test suite stabilization
 - Advanced VS Code testing setup (Mocha bootstrap, suite/index, deterministic ordering)
+- Metadata‑driven IntelliSense for Cosmos DB server‑side API
+  - Completion Provider (context, collection, request, response)
+  - Signature Help Provider with overload + parameter documentation
 - Versioning pipeline using `VERSION` + automated CHANGELOG insertion
-
-
-
-

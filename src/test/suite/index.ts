@@ -1,32 +1,42 @@
-import * as path from 'path';
-import Mocha from 'mocha';
-import { glob } from 'glob';
+// src/test/suite/index.ts
+
+import * as path from 'path'
+import Mocha from 'mocha'
+import { glob } from 'glob'
 
 export function run(): Promise<void> {
   const mocha = new Mocha({
     ui: 'tdd',
-    color: true
-  });
+    color: true,
+  })
 
-  const testsRoot = path.resolve(__dirname);
+  const testsRoot = path.resolve(__dirname)
 
-  console.log(`Running tests in ${testsRoot}`);
+  console.log(`Running tests in: ${testsRoot}`)
 
   return new Promise((resolve, reject) => {
-    glob('**/*.test.js', { cwd: testsRoot }).then((files: string[]) => {
-      files.forEach((f: string) => mocha.addFile(path.resolve(testsRoot, f)));
+    glob('**/*.test.js', { cwd: testsRoot })
+      .then((files: string[]) => {
+        if (files.length === 0) {
+          console.warn('⚠ No test files found.')
+        }
 
-      try {
-        mocha.run((failures: number) => {
-          if (failures > 0) {
-            reject(new Error(`${failures} tests failed.`));
-          } else {
-            resolve();
-          }
-        });
-      } catch (err) {
-        reject(err);
-      }
-    }).catch(reject);
-  });
+        for (const file of files) {
+          mocha.addFile(path.resolve(testsRoot, file))
+        }
+
+        try {
+          mocha.run((failures: number) => {
+            if (failures > 0) {
+              reject(new Error(`${failures} tests failed.`))
+            } else {
+              resolve()
+            }
+          })
+        } catch (err) {
+          reject(err)
+        }
+      })
+      .catch(reject)
+  })
 }

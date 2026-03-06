@@ -1,22 +1,30 @@
-import * as assert from "assert";
-import * as vscode from "vscode";
+// src/test/suite/extension.test.ts
 
-suite("Extension Tests", () => {
-  test("extension activates", async () => {
+import * as assert from 'assert'
+import * as vscode from 'vscode'
+
+suite('Extension Activation Tests', () => {
+  test('extension loads and activates', async () => {
     const extension = vscode.extensions.getExtension(
-      "wayne-blackmon.cosmosdb-toolkit",
-    );
-    assert.ok(extension, "Extension should be found");
+      'wayne-blackmon.cosmosdb-toolkit',
+    )
 
-    await extension?.activate();
-    assert.ok(extension?.isActive, "Extension should be active");
+    assert.ok(extension, 'Extension should be found')
 
-    vscode.commands.registerCommand("cosmosdb.openScratchpad", async () => {
-      const doc = await vscode.workspace.openTextDocument({
-        language: "javascript",
-        content: "",
-      });
-      await vscode.window.showTextDocument(doc);
-    });
-  });
-});
+    await extension?.activate()
+
+    assert.ok(
+      extension?.isActive,
+      'Extension should be active after activation',
+    )
+  })
+
+  test('scratchpad command is registered', async () => {
+    const commands = await vscode.commands.getCommands(true)
+
+    assert.ok(
+      commands.includes('cosmosdb-toolkit.openScratchpad'),
+      'openScratchpad command should be registered',
+    )
+  })
+})

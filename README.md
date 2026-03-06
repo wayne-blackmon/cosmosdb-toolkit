@@ -1,112 +1,122 @@
-# 🌌 Cosmos DB Toolkit for VS Code
+# Cosmos DB Toolkit for VS Code
 
-**Cosmos DB Toolkit** is a developer‑focused extension that streamlines authoring, testing, and managing Azure Cosmos DB server‑side JavaScript artifacts — including **stored procedures**, **triggers**, and **user‑defined functions (UDFs)**.
+A lightweight, metadata‑driven IntelliSense extension for Azure Cosmos DB server‑side JavaScript
+(stored procedures, triggers, and UDFs).
 
-It provides a frictionless scratchpad workflow, IntelliSense for the Cosmos DB server‑side API, and a clean development experience designed for iterative experimentation.
+This toolkit provides:
 
----
-
-## ✨ Features
-
-### 🔧 Cosmos DB Scratchpad
-
-A dedicated workspace for writing and experimenting with Cosmos DB server‑side JavaScript.
-
-- Auto‑opens in **Development Mode**
-- Always available via the command palette:
-  - **Cosmos DB Toolkit: Open Scratchpad**
-- Backed by a real file (`src/scratchpad/scratchpad.js`) for stability and version control
-
-### 💡 IntelliSense for Cosmos DB Server‑Side API
-
-Smart completions for:
-
-- `getContext()`
-- `getCollection()`
-- `getResponse()`
-- Stored procedure patterns
-- Trigger and UDF scaffolding
-
-### 🧪 Test‑Friendly Architecture
-
-- Extension activates cleanly in Test Mode (`EXT MODE: 3`)
-- Scratchpad auto‑open disabled during tests
-- Deterministic command behavior
-
-### 🛠 Developer‑First Design
-
-- Clean activation model
-- Predictable file paths
-- Cross‑platform test suite
-- Deterministic versioning pipeline using `VERSION` + `CHANGELOG.md`
+- ✔ Completion suggestions for all Cosmos DB server‑side APIs  
+- ✔ Signature help with parameter documentation  
+- ✔ Structured metadata powering IntelliSense  
+- ✔ A built‑in scratchpad for writing and testing stored procedures  
+- ✔ A clean, deterministic test suite  
 
 ---
 
-## 📦 Requirements
+## Features
 
-No external dependencies are required to use the scratchpad or IntelliSense features.
+### 🔹 Metadata‑Driven IntelliSense
 
-For deploying stored procedures or triggers, you may optionally use:
+All IntelliSense is powered by a structured metadata file:
 
-- Azure CLI  
-- Azure Cosmos DB account  
-- Azure extension for VS Code  
+- `src/providers/metadata/cosmosApi.ts`
 
----
+This includes:
 
-## ⚙️ Extension Settings
+- API groups (`context`, `collection`, `request`, `response`)
+- Functions
+- Parameters
+- Overloads
+- Documentation
 
-This extension contributes the following command:
+### 🔹 Completion Provider
 
-| Command                           | Description                         |
-|-----------------------------------|-------------------------------------|
-| `cosmosdb-toolkit.openScratchpad` | Opens the Cosmos DB scratchpad file |
+Automatically suggests Cosmos DB server‑side functions when typing:
 
-Additional configuration options will be added as the extension evolves.
+- `getContext().`
+- `getCollection().`
+- `getRequest().`
+- `getResponse().`
 
----
+### 🔹 Signature Help Provider
 
-## 🐞 Known Issues
+Displays function signatures and parameter documentation when typing:
 
-- IntelliSense coverage is focused on server‑side JavaScript APIs; additional APIs will be added incrementally.
-- Scratchpad auto‑open is limited to Development Mode by design.
+- `(`
+- `,`
 
----
+### 🔹 Scratchpad Command
 
-## 📝 Release Notes
+Quickly open a JavaScript scratchpad for writing stored procedures:
 
-### v0.0.1
+- Command title: `Cosmos DB: Open Scratchpad`
+- Command ID: `cosmosdb-toolkit.openScratchpad`
 
-- Initial activation model  
-- Scratchpad auto‑open in Dev Mode  
-- Command palette integration  
-- Test suite stabilization  
-- Deterministic versioning pipeline  
+### 🔹 Test Suite
 
----
+Located under:
 
-## 📚 Following Extension Guidelines
+- `src/test`
 
-This extension follows the official VS Code extension authoring guidelines:
+Includes:
 
-- Activation events are minimal and explicit  
-- Commands are registered unconditionally  
-- Dev Mode behavior is isolated from Production and Test modes  
+- Completion provider tests  
+- Signature provider tests  
+- Scratchpad tests  
+- Extension activation tests  
 
----
+Run tests with:
 
-## ✍️ Working with Markdown
-
-VS Code includes excellent Markdown authoring tools:
-
-- Split editor: `Ctrl+\`
-- Preview: `Ctrl+Shift+V`
-- IntelliSense: `Ctrl+Space`
+- `npm test`
 
 ---
 
-## 🔗 Additional Resources
+## Folder Structure
 
-- [VS Code Extension Docs](https://code.visualstudio.com/api)
-- [Azure Cosmos DB Documentation](https://learn.microsoft.com/azure/cosmos-db/)
-- [Markdown Guide](https://www.markdownguide.org/basic-syntax/)
+    src/
+      extension.ts
+      providers/
+        CosmosCompletionProvider.ts
+        CosmosSignatureProvider.ts
+        metadata/
+          cosmosApi.ts
+      scratchpad/
+        scratchpad.js
+
+    test/
+      runTest.ts
+      suite/
+        completionProvider.test.ts
+        signatureProvider.test.ts
+        scratchpad.test.ts
+        extension.test.ts
+
+---
+
+## Requirements
+
+- VS Code 1.85+
+- Node 18+
+- TypeScript 5+
+
+---
+
+## Development
+
+Compile:
+
+- `npm run compile`
+
+Watch mode:
+
+- `npm run watch`
+
+Run tests:
+
+- `npm test`
+
+---
+
+## License
+
+MIT
