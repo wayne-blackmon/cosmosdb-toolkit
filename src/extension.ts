@@ -6,10 +6,21 @@ import { languages } from 'vscode'
 
 import { CosmosCompletionProvider } from './providers/CosmosCompletionProvider'
 import { CosmosSignatureProvider } from './providers/CosmosSignatureProvider'
+import { CosmosHoverProvider } from './providers/CosmosHoverProvider'
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('cosmosdb-toolkit activated')
   console.log('Extension mode:', context.extensionMode)
+
+  //
+  // HOVER PROVIDER
+  //
+  const hoverProvider = vscode.languages.registerHoverProvider(
+    ['javascript', 'typescript'],
+    new CosmosHoverProvider()
+  )
+
+  context.subscriptions.push(hoverProvider)
 
   //
   // COMPLETION PROVIDER

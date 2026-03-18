@@ -9,6 +9,21 @@ Versions are automatically incremented via the check‑in script.
 
 ## [Unreleased]
 
+### Added
+
+- Fully typed Cosmos Hover Provider with metadata‑driven documentation and signatures
+- Hover provider registration for both file‑backed and untitled documents
+- Deterministic hover extraction utility for test suite
+- Robust hover provider test suite with Cosmos‑specific assertions
+
+### Improved
+
+- Updated completion and signature help metadata paths
+- Hardened test suite to ignore built‑in VS Code hover providers
+- Stabilized VS Code test runner behavior across untitled documents
+
+### Existing Features
+
 - Initial release of the Cosmos DB Toolkit extension
 - Scratchpad auto‑open in Development Mode
 - Command palette integration (`cosmosdb-toolkit.openScratchpad`)
@@ -19,3 +34,4 @@ Versions are automatically incremented via the check‑in script.
   - Completion Provider (context, collection, request, response)
   - Signature Help Provider with overload + parameter documentation
 - Versioning pipeline using `VERSION` + automated CHANGELOG insertion
+

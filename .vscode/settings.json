@@ -1,11 +1,44 @@
-// Place your settings in this file to overwrite default and user settings.
+// Workspace settings — override global settings only for this project
 {
   "files.exclude": {
-    "out": false // set this to true to hide the "out" folder with the compiled JS files
+    "out": false
   },
   "search.exclude": {
-    "out": true // set this to false to include "out" folder in search results
+    "out": true
   },
-  // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
-  "js/ts.tsc.autoDetect": "off"
+
+  // Disable automatic tsc task detection
+  "js/ts.tsc.autoDetect": "off",
+
+  // --- FORMATTER FIXES ---
+  "editor.formatOnSave": true,
+  "eslint.format.enable": true,
+  "eslint.validate": ["typescript", "javascript"],
+
+  // Use ESLint for TS/JS to avoid semicolon conflicts
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+
+  // Keep Prettier for JSON/Markdown (no conflicts here)
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // --- SUPPRESS MARKDOWNLINT SCHEMA WARNING ---
+  "json.schemas": [
+    {
+      "fileMatch": ["*.markdownlint.json", ".markdownlint.json"],
+      "url": ""
+    }
+  ]
 }
