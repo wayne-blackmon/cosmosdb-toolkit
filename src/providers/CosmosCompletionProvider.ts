@@ -1,7 +1,8 @@
 // src/providers/CosmosCompletionProvider.ts
 
 import * as vscode from 'vscode'
-import { cosmosApi, ApiFunction } from './metadata/cosmosApi'
+import { cosmosApi } from './metadata/cosmosApi'
+import { ApiFunction } from './metadata/metadataSchema'
 
 export class CosmosCompletionProvider implements vscode.CompletionItemProvider {
   provideCompletionItems(

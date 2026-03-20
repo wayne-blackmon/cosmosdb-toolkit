@@ -45,25 +45,18 @@ function sampleSproc(input) {
   // Query documents
   // Hover over: queryDocuments
   // -----------------------------------------------------------------------
-  // collection.queryDocuments(
-  //   collectionLink,
-  //   { query, parameters: params },
-  //   options,
-  //   callback
-  // )
-
   collection.queryDocuments(
     collectionLink,
     { query, parameters: params },
     options,
     callback
   )
+
   // -----------------------------------------------------------------------
   // Create a document
   // Hover over: createDocument
   // -----------------------------------------------------------------------
   // collection.createDocument(collectionLink, docBody, options, callback)
-  collection.createDocument(collectionLink, docBody, options, callback)
 
   // -----------------------------------------------------------------------
   // Read a document

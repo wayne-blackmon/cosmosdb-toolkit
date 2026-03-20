@@ -1,8 +1,8 @@
 // src/providers/CosmosSignatureProvider.ts
 
 import * as vscode from 'vscode'
-import { cosmosApi, ApiFunction, ApiSignature } from './metadata/cosmosApi'
-
+import { cosmosApi } from './metadata/cosmosApi'
+import { ApiFunction, ApiSignature } from './metadata/metadataSchema'
 // ---------------------------------------------------------------------------
 // Function‑name extraction regexes (string + compiled RegExp)
 // ---------------------------------------------------------------------------

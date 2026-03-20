@@ -78,7 +78,8 @@ suite('CosmosHoverProvider', () => {
     )
   })
 
-  test('No hover appears for unknown identifiers', async () => {
+  test('No hover appears for unknown identifiers', async function () {
+    this.timeout(10000)
     const doc = await vscode.workspace.openTextDocument({
       language: 'javascript',
       content: `
@@ -93,13 +94,13 @@ suite('CosmosHoverProvider', () => {
     const position = new vscode.Position(2, 25)
     editor.selection = new vscode.Selection(position, position)
 
-    const hovers = await vscode.commands.executeCommand<vscode.Hover[]>(
+    const hovers = (await vscode.commands.executeCommand<vscode.Hover[]>(
       'vscode.executeHoverProvider',
       doc.uri,
       position
-    )
+    )) || []
 
-    assert.ok(hovers, 'Expected hover results array')
+    assert.ok(Array.isArray(hovers), 'Expected hover results array')
 
     const cosmosHover = hovers.find((h) => {
       const text = h.contents

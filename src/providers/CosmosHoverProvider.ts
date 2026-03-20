@@ -1,5 +1,8 @@
+// src/providers/CosmosHoverProvider.ts
+
 import * as vscode from 'vscode'
-import { ApiFunction, ApiSignature, cosmosApi } from './metadata/cosmosApi'
+import { cosmosApi } from './metadata/cosmosApi'
+import { ApiFunction, ApiSignature } from './metadata/metadataSchema'
 
 export class CosmosHoverProvider implements vscode.HoverProvider {
   provideHover(document: vscode.TextDocument, position: vscode.Position) {
@@ -28,6 +31,7 @@ export class CosmosHoverProvider implements vscode.HoverProvider {
     return new vscode.Hover(md, range)
   }
 
+  
   findApiFunction(name: string) {
     const groups = Object.values(cosmosApi)
     for (const group of groups) {
