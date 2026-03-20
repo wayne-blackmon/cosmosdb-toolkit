@@ -86,7 +86,6 @@ export const cosmosApi: CosmosApiMetadata = {
       }
     ]
   },
-
   collection: {
     label: 'ICollection',
     functions: [

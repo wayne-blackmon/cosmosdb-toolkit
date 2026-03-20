@@ -7,10 +7,17 @@ import { languages } from 'vscode'
 import { CosmosCompletionProvider } from './providers/CosmosCompletionProvider'
 import { CosmosSignatureProvider } from './providers/CosmosSignatureProvider'
 import { CosmosHoverProvider } from './providers/CosmosHoverProvider'
+import { CosmosDiagnosticsProvider } from './providers/CosmosDiagnosticsProvider'
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('cosmosdb-toolkit activated')
   console.log('Extension mode:', context.extensionMode)
+
+  //
+  // DIAGNOSTICS PROVIDER
+  //
+  const diagnosticsProvider = new CosmosDiagnosticsProvider(context)
+  context.subscriptions.push(diagnosticsProvider)
 
   //
   // HOVER PROVIDER

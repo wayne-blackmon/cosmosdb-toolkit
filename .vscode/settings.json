@@ -10,18 +10,20 @@
   // Disable automatic tsc task detection
   "js/ts.tsc.autoDetect": "off",
 
-  // --- FORMATTER FIXES ---
+  // --- FORMATTER PIPELINE ---
   "editor.formatOnSave": true,
   "eslint.format.enable": true,
-  "eslint.validate": ["typescript", "javascript"],
 
   // Use ESLint for TS/JS to avoid semicolon conflicts
   "[typescript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   },
   "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
+
+  // Explicitly prevent Prettier from touching TS/JS
+  "prettier.disableLanguages": ["javascript", "typescript"],
 
   // Keep Prettier for JSON/Markdown (no conflicts here)
   "[json]": {

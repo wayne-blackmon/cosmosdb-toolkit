@@ -21,6 +21,8 @@ Versions are automatically incremented via the check‑in script.
 - Updated completion and signature help metadata paths
 - Hardened test suite to ignore built‑in VS Code hover providers
 - Stabilized VS Code test runner behavior across untitled documents
+- Diagnostics: eliminated false positives by skipping function declarations in unknown‑function rule
+- Diagnostics: improved function‑call detection to avoid misidentifying local symbols as Cosmos API calls
 
 ### Existing Features
 

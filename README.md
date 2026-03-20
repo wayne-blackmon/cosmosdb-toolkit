@@ -33,15 +33,15 @@ The result is a predictable, developer‑friendly experience for anyone writing 
 
 All IntelliSense is powered by a structured metadata file:
 
-- `src/providers/metadata/cosmosApi.ts`
+- \`src/providers/metadata/cosmosApi.ts\`
 
 A typed metadata schema defines the structure for all API groups, functions, signatures, and parameters:
 
-- `src/providers/metadata/metadataSchema.ts`
+- \`src/providers/metadata/metadataSchema.ts\`
 
 This includes:
 
-- API groups (`context`, `collection`, `request`, `response`)  
+- API groups (\`context\`, \`collection\`, \`request\`, \`response\`)  
 - Functions  
 - Parameters  
 - Overloads  
@@ -51,26 +51,26 @@ This includes:
 
 Automatically suggests Cosmos DB server‑side functions when typing:
 
-- `getContext().`  
-- `getCollection().`  
-- `getRequest().`  
-- `getResponse().`  
+- \`getContext().\`  
+- \`getCollection().\`  
+- \`getRequest().\`  
+- \`getResponse().\`  
 
 ### 🔹 Signature Help Provider
 
 Displays function signatures and parameter documentation when typing:
 
-- `(`  
-- `,`  
+- \`(\`  
+- \`,\`  
 
 ### 🔹 Hover Provider
 
 Shows rich documentation and signatures when hovering over:
 
-- `getContext`  
-- `queryDocuments`  
-- `createDocument`  
-- `setStatusCode`  
+- \`getContext\`  
+- \`queryDocuments\`  
+- \`createDocument\`  
+- \`setStatusCode\`  
 - …and all other Cosmos DB server‑side APIs  
 
 The hover provider is fully metadata‑driven and works in both file‑backed and untitled documents.
@@ -80,13 +80,13 @@ The hover provider is fully metadata‑driven and works in both file‑backed an
 Quickly open a JavaScript scratchpad for writing stored procedures:
 
 - Command title: **Cosmos DB: Open Scratchpad**  
-- Command ID: `cosmosdb-toolkit.openScratchpad`  
+- Command ID: \`cosmosdb-toolkit.openScratchpad\`  
 
 ### 🔹 Test Suite
 
 Located under:
 
-- `src/test`
+- \`src/test\`
 
 Includes:
 
