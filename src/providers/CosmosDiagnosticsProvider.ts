@@ -106,7 +106,8 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
         text: string,
         diagnostics: vscode.Diagnostic[]
     ): void {
-        const entryPointPatternString = '\\bget[A-Z][A-Za-z0-9_]*\\s*\\('
+        // Match getXxx() calls that are not method calls (not preceded by a dot)
+        const entryPointPatternString = '(?<!\\.)\\bget[A-Z][A-Za-z0-9_]*\\s*\\('
         const entryPointPattern = new RegExp(entryPointPatternString, 'g')
         let match: RegExpExecArray | null
 

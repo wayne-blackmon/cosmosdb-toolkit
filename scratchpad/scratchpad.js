@@ -57,6 +57,7 @@ function sampleSproc(input) {
   // Hover over: createDocument
   // -----------------------------------------------------------------------
   // collection.createDocument(collectionLink, docBody, options, callback)
+  collection.createDocument(collectionLink, docBody, options)
 
   // -----------------------------------------------------------------------
   // Read a document
@@ -80,24 +81,19 @@ function sampleSproc(input) {
   // Upsert a document
   // Hover over: upsertDocument
   // -----------------------------------------------------------------------
-  // collection.upsertDocument(collectionLink, docBody, options, callback)
+  // collection.upsertDocument(collectionLink, docBody, options, callback)]
+  collection.upsertDocument(collectionLink, docBody, options)
 
   // -----------------------------------------------------------------------
   // Request + Response API
   // Hover over: getBody, setBody, getValue, setValue, setStatusCode
   // -----------------------------------------------------------------------
-  // const body = request.getBody()
-  // request.setBody({ updated: true })
   const body = request.getBody()
   request.setBody({ updated: true })
 
-  // const value = request.getValue()
-  // request.setValue('new value')
   const value = request.getValue()
   request.setValue('new value')
 
-  // response.setStatusCode(200)
-  // response.setBody({ ok: true, input })
   response.setStatusCode(200)
   response.setBody({ ok: true, input })
 }
