@@ -1,0 +1,61 @@
+{
+  "Cosmos Stored Procedure (TS)": {
+    "prefix": "cosmos.sproc",
+    "description": "Create a Cosmos DB stored procedure (TypeScript)",
+    "body": [
+      "export function ${1:name}(context: IContext, req: IRequest): void {",
+      "  const collection = context.getCollection();",
+      "  const response = context.getResponse();",
+      "",
+      "  // TODO: implement logic",
+      "  response.setBody('Hello from ${1:name}');",
+      "}"
+    ]
+  },
+  "Cosmos Continuation Query Loop (TS)": {
+    "prefix": "cosmos.query.loop",
+    "description": "Continuation-aware query loop for Cosmos DB server-side TS",
+    "body": [
+      "const collection = context.getCollection();",
+      "const response = context.getResponse();",
+      "",
+      "const query = '${1:SELECT * FROM c}';",
+      "const options: IRequestOptions = { pageSize: ${2:100} };",
+      "",
+      "let results: any[] = [];",
+      "",
+      "const run = (continuation?: string): void => {",
+      "  const accepted = collection.queryDocuments(",
+      "    collection.getSelfLink(),",
+      "    query,",
+      "    { ...options, continuation },",
+      "    (err: IError, docs: any[], info: IFeedCallbackInfo) => {",
+      "      if (err) throw err;",
+      "",
+      "      results = results.concat(docs);",
+      "",
+      "      if (info.continuation) {",
+      "        run(info.continuation);",
+      "      } else {",
+      "        response.setBody(results);",
+      "      }",
+      "    }",
+      "  );",
+      "",
+      "  if (!accepted) throw new Error('Query not accepted by server.');",
+      "};",
+      "",
+      "run();"
+    ]
+  },
+  "Cosmos Callback Pattern (TS)": {
+    "prefix": "cosmos.cb",
+    "description": "Standard callback signature for Cosmos DB server-side operations (TS)",
+    "body": [
+      "const callback = (err: IError, result: any, info: IFeedCallbackInfo): void => {",
+      "  if (err) throw err;",
+      "  ${1:// handle result}",
+      "};"
+    ]
+  }
+}

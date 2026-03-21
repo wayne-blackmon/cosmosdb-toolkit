@@ -1,5 +1,6 @@
-// src/providers/metadata/metadataSchema.ts
-
+// ---------------------------------------------------------------------------
+// Parameter metadata
+// ---------------------------------------------------------------------------
 export interface ApiParameter {
   name: string
   type: string
@@ -7,6 +8,9 @@ export interface ApiParameter {
   documentation?: string
 }
 
+// ---------------------------------------------------------------------------
+// Signature metadata
+// ---------------------------------------------------------------------------
 export interface ApiSignature {
   label: string
   parameters: ApiParameter[]
@@ -14,24 +18,43 @@ export interface ApiSignature {
   documentation?: string
 }
 
+// ---------------------------------------------------------------------------
+// Snippet metadata (NEW)
+// ---------------------------------------------------------------------------
+export interface CosmosFunctionSnippet {
+  prefix: string
+  body: string[]
+  description?: string
+}
+
+// ---------------------------------------------------------------------------
+// Function metadata
+// ---------------------------------------------------------------------------
 export interface ApiFunction {
   label: string
   detail: string
-  documentation: string
+  documentation?: string
   signatures: ApiSignature[]
-
-  // Hover‑specific enrichments
   examples?: string[]
   related?: string[]
   notes?: string[]
+
+  // NEW
+  snippet?: CosmosFunctionSnippet
 }
 
+// ---------------------------------------------------------------------------
+// Group metadata
+// ---------------------------------------------------------------------------
 export interface ApiGroup {
   label: string
   functions: ApiFunction[]
 }
 
-export interface CosmosApiMetadata {
+// ---------------------------------------------------------------------------
+// Root metadata object
+// ---------------------------------------------------------------------------
+export interface CosmosApi {
   context: ApiGroup
   collection: ApiGroup
   request: ApiGroup

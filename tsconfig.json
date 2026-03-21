@@ -17,8 +17,8 @@
     "moduleResolution": "node",
     "skipLibCheck": true,
 
-    // VS Code extension specific
-    "types": ["node", "vscode"]
+    "types": ["node", "vscode"],
+    "typeRoots": ["./src/types", "./node_modules/@types"]
   },
 
   "include": ["src/**/*"],

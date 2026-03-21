@@ -5,12 +5,13 @@ import parser from '@typescript-eslint/parser'
 
 export default [
 
-  // Ignore VS Code test harness and build output
+  // Ignore VS Code test harness, build output, and scratchpad
   {
     ignores: [
       '.vscode-test/**',
       'out/**',
-      'node_modules/**'
+      'node_modules/**',
+      'scratchpad/**'
     ]
   },
 

@@ -2,7 +2,7 @@
   "name": "cosmosdb-toolkit",
   "displayName": "Cosmos DB Toolkit",
   "description": "Developer tooling for Azure Cosmos DB server-side JavaScript (stored procedures, triggers, UDFs).",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "wayne-blackmon",
   "engines": {
     "vscode": "^1.85.0"
@@ -21,6 +21,16 @@
       {
         "command": "cosmosdb-toolkit.openScratchpad",
         "title": "Cosmos DB: Open Scratchpad"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "javascript",
+        "path": "./snippets/cosmos-js.code-snippets"
+      },
+      {
+        "language": "typescript",
+        "path": "./snippets/cosmos-ts.code-snippets"
       }
     ]
   },

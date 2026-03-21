@@ -37,3 +37,4 @@ Versions are automatically incremented via the check‑in script.
   - Signature Help Provider with overload + parameter documentation
 - Versioning pipeline using \`VERSION\` + automated CHANGELOG insertion
 
+

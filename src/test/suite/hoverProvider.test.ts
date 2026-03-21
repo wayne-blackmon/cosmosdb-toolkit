@@ -62,6 +62,7 @@ suite('CosmosHoverProvider', () => {
       'Hover should include function label'
     )
 
+    assert.ok(apiEntry.documentation, 'API entry should have documentation')
     assert.ok(
       hoverText.includes(apiEntry.documentation),
       'Hover should include documentation'
