@@ -23,7 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
   //
   const hoverProvider = vscode.languages.registerHoverProvider(
     ['javascript', 'typescript'],
-    new CosmosHoverProvider()
+    new CosmosHoverProvider(),
   )
 
   context.subscriptions.push(hoverProvider)
@@ -31,7 +31,24 @@ export async function activate(context: vscode.ExtensionContext) {
   //
   // COMPLETION PROVIDER
   //
-  const cosmosTriggerLetters = ['c', 'd', 'g', 'p', 'q', 'r', 's', 'u', 'C', 'D', 'G', 'P', 'Q', 'R', 'S', 'U']
+  const cosmosTriggerLetters = [
+    'c',
+    'd',
+    'g',
+    'p',
+    'q',
+    'r',
+    's',
+    'u',
+    'C',
+    'D',
+    'G',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'U',
+  ]
   context.subscriptions.push(
     languages.registerCompletionItemProvider(
       ['javascript', 'typescript'],
@@ -40,7 +57,6 @@ export async function activate(context: vscode.ExtensionContext) {
       ...cosmosTriggerLetters,
     ),
   )
-
 
   //
   // SIGNATURE HELP PROVIDER (FIXED)
@@ -64,21 +80,17 @@ export async function activate(context: vscode.ExtensionContext) {
   // SCRATCHPAD COMMAND (opens both JS + TS)
   //
   context.subscriptions.push(
-    vscode.commands.registerCommand(
-      'cosmosdb-toolkit.openScratchpad',
-      async () => {
-        const jsPad = vscode.Uri.joinPath(context.extensionUri, 'scratchpad', 'scratchpad.js')
-        const tsPad = vscode.Uri.joinPath(context.extensionUri, 'scratchpad', 'scratchpad.ts')
+    vscode.commands.registerCommand('cosmosdb-toolkit.openScratchpad', async () => {
+      const jsPad = vscode.Uri.joinPath(context.extensionUri, 'scratchpad', 'scratchpad.js')
+      const tsPad = vscode.Uri.joinPath(context.extensionUri, 'scratchpad', 'scratchpad.ts')
 
-        const jsDoc = await vscode.workspace.openTextDocument(jsPad)
-        await vscode.window.showTextDocument(jsDoc, { preview: false })
+      const jsDoc = await vscode.workspace.openTextDocument(jsPad)
+      await vscode.window.showTextDocument(jsDoc, { preview: false })
 
-        const tsDoc = await vscode.workspace.openTextDocument(tsPad)
-        await vscode.window.showTextDocument(tsDoc, { preview: false })
-      }
-    )
+      const tsDoc = await vscode.workspace.openTextDocument(tsPad)
+      await vscode.window.showTextDocument(tsDoc, { preview: false })
+    }),
   )
-
 
   //
   // AUTO-OPEN SCRATCHPADS IN DEV MODE
@@ -97,7 +109,6 @@ export async function activate(context: vscode.ExtensionContext) {
       console.error('Failed to auto-open scratchpads:', err)
     }
   }
-
 }
 
-export function deactivate() { }
+export function deactivate() {}

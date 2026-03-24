@@ -10,53 +10,53 @@ export const cosmosSnippets: SnippetMap = {
       js: {
         prefix: 'cosmos.getContext',
         description: 'Get the current execution context',
-        body: ['const context = getContext()']
+        body: ['const context = getContext()'],
       },
       ts: {
         prefix: 'cosmos.getContext',
         description: 'Get the current execution context',
-        body: ['const context = getContext()']
-      }
+        body: ['const context = getContext()'],
+      },
     },
 
     getCollection: {
       js: {
         prefix: 'cosmos.getCollection',
         description: 'Get the collection interface',
-        body: ['const collection = getContext().getCollection()']
+        body: ['const collection = getContext().getCollection()'],
       },
       ts: {
         prefix: 'cosmos.getCollection',
         description: 'Get the collection interface',
-        body: ['const collection = getContext().getCollection()']
-      }
+        body: ['const collection = getContext().getCollection()'],
+      },
     },
 
     getRequest: {
       js: {
         prefix: 'cosmos.getRequest',
         description: 'Get the request interface',
-        body: ['const request = getContext().getRequest()']
+        body: ['const request = getContext().getRequest()'],
       },
       ts: {
         prefix: 'cosmos.getRequest',
         description: 'Get the request interface',
-        body: ['const request = getContext().getRequest()']
-      }
+        body: ['const request = getContext().getRequest()'],
+      },
     },
 
     getResponse: {
       js: {
         prefix: 'cosmos.getResponse',
         description: 'Get the response interface',
-        body: ['const response = getContext().getResponse()']
+        body: ['const response = getContext().getResponse()'],
       },
       ts: {
         prefix: 'cosmos.getResponse',
         description: 'Get the response interface',
-        body: ['const response = getContext().getResponse()']
-      }
-    }
+        body: ['const response = getContext().getResponse()'],
+      },
+    },
   },
 
   collection: {
@@ -79,8 +79,8 @@ export const cosmosSnippets: SnippetMap = {
           '    if (err) throw err',
           '    // handle docs',
           '  }',
-          ')'
-        ]
+          ')',
+        ],
       },
       ts: {
         prefix: 'cosmos.queryDocuments',
@@ -100,9 +100,9 @@ export const cosmosSnippets: SnippetMap = {
           '    if (err) throw err',
           '    // handle docs',
           '  }',
-          ')'
-        ]
-      }
+          ')',
+        ],
+      },
     },
 
     createDocument: {
@@ -123,8 +123,8 @@ export const cosmosSnippets: SnippetMap = {
           '    if (err) throw err',
           '    // handle created document',
           '  }',
-          ')'
-        ]
+          ')',
+        ],
       },
       ts: {
         prefix: 'cosmos.createDocument',
@@ -143,9 +143,9 @@ export const cosmosSnippets: SnippetMap = {
           '    if (err) throw err',
           '    // handle created document',
           '  }',
-          ')'
-        ]
-      }
+          ')',
+        ],
+      },
     },
 
     readDocument: {
@@ -163,8 +163,8 @@ export const cosmosSnippets: SnippetMap = {
           '    if (err) throw err',
           '    // handle doc',
           '  }',
-          ')'
-        ]
+          ')',
+        ],
       },
       ts: {
         prefix: 'cosmos.readDocument',
@@ -180,9 +180,9 @@ export const cosmosSnippets: SnippetMap = {
           '    if (err) throw err',
           '    // handle doc',
           '  }',
-          ')'
-        ]
-      }
+          ')',
+        ],
+      },
     },
 
     replaceDocument: {
@@ -203,8 +203,8 @@ export const cosmosSnippets: SnippetMap = {
           '    if (err) throw err',
           '    // handle updated doc',
           '  }',
-          ')'
-        ]
+          ')',
+        ],
       },
       ts: {
         prefix: 'cosmos.replaceDocument',
@@ -223,8 +223,8 @@ export const cosmosSnippets: SnippetMap = {
           '    if (err) throw err',
           '    // handle updated doc',
           '  }',
-          ')'
-        ]
+          ')',
+        ],
       },
     },
 
@@ -243,8 +243,8 @@ export const cosmosSnippets: SnippetMap = {
           '    if (err) throw err',
           '    // document deleted',
           '  }',
-          ')'
-        ]
+          ')',
+        ],
       },
       ts: {
         prefix: 'cosmos.deleteDocument',
@@ -260,9 +260,9 @@ export const cosmosSnippets: SnippetMap = {
           '    if (err) throw err',
           '    // document deleted',
           '  }',
-          ')'
-        ]
-      }
+          ')',
+        ],
+      },
     },
 
     upsertDocument: {
@@ -283,8 +283,8 @@ export const cosmosSnippets: SnippetMap = {
           '    if (err) throw err',
           '    // handle result',
           '  }',
-          ')'
-        ]
+          ')',
+        ],
       },
       ts: {
         prefix: 'cosmos.upsertDocument',
@@ -303,10 +303,10 @@ export const cosmosSnippets: SnippetMap = {
           '    if (err) throw err',
           '    // handle result',
           '  }',
-          ')'
-        ]
-      }
-    }
+          ')',
+        ],
+      },
+    },
   },
 
   request: {
@@ -314,53 +314,53 @@ export const cosmosSnippets: SnippetMap = {
       js: {
         prefix: 'cosmos.getBody',
         description: 'Get the request body',
-        body: ['const body = getContext().getRequest().getBody()']
+        body: ['const body = getContext().getRequest().getBody()'],
       },
       ts: {
         prefix: 'cosmos.getBody',
         description: 'Get the request body',
-        body: ['const body: any = getContext().getRequest().getBody()']
-      }
+        body: ['const body: any = getContext().getRequest().getBody()'],
+      },
     },
 
     setBody: {
       js: {
         prefix: 'cosmos.setRequestBody',
         description: 'Set the request body',
-        body: ['getContext().getRequest().setBody({ updated:true })']
+        body: ['getContext().getRequest().setBody({ updated:true })'],
       },
       ts: {
         prefix: 'cosmos.setRequestBody',
         description: 'Set the request body',
-        body: ['getContext().getRequest().setBody({ updated: true })']
-      }
+        body: ['getContext().getRequest().setBody({ updated: true })'],
+      },
     },
 
     getValue: {
       js: {
         prefix: 'cosmos.getValue',
         description: 'Get the request value',
-        body: ['const value = getContext().getRequest().getValue()']
+        body: ['const value = getContext().getRequest().getValue()'],
       },
       ts: {
         prefix: 'cosmos.getValue',
         description: 'Get the request value',
-        body: ['const value: any = getContext().getRequest().getValue()']
-      }
+        body: ['const value: any = getContext().getRequest().getValue()'],
+      },
     },
 
     setValue: {
       js: {
         prefix: 'cosmos.setValue',
         description: 'Set the request value',
-        body: ['getContext().getRequest().setValue(\'new value\')']
+        body: ['getContext().getRequest().setValue(\'new value\')'],
       },
       ts: {
         prefix: 'cosmos.setValue',
         description: 'Set the request value',
-        body: ['getContext().getRequest().setValue(\'new value\')']
-      }
-    }
+        body: ['getContext().getRequest().setValue(\'new value\')'],
+      },
+    },
   },
 
   response: {
@@ -368,39 +368,39 @@ export const cosmosSnippets: SnippetMap = {
       js: {
         prefix: 'cosmos.setStatusCode',
         description: 'Set the response status code',
-        body: ['getContext().getResponse().setStatusCode(200)']
+        body: ['getContext().getResponse().setStatusCode(200)'],
       },
       ts: {
         prefix: 'cosmos.setStatusCode',
         description: 'Set the response status code',
-        body: ['getContext().getResponse().setStatusCode(200)']
-      }
+        body: ['getContext().getResponse().setStatusCode(200)'],
+      },
     },
 
     setBody: {
       js: {
         prefix: 'cosmos.setResponseBody',
         description: 'Set the response body',
-        body: ['getContext().getResponse().setBody({ ok:true })']
+        body: ['getContext().getResponse().setBody({ ok:true })'],
       },
       ts: {
         prefix: 'cosmos.setResponseBody',
         description: 'Set the response body',
-        body: ['getContext().getResponse().setBody({ ok: true })']
-      }
+        body: ['getContext().getResponse().setBody({ ok: true })'],
+      },
     },
 
     getBody: {
       js: {
         prefix: 'cosmos.getResponseBody',
         description: 'Get the response body',
-        body: ['const body = getContext().getResponse().getBody()']
+        body: ['const body = getContext().getResponse().getBody()'],
       },
       ts: {
         prefix: 'cosmos.getResponseBody',
         description: 'Get the response body',
-        body: ['const body: any = getContext().getResponse().getBody()']
-      }
-    }
-  }
+        body: ['const body: any = getContext().getResponse().getBody()'],
+      },
+    },
+  },
 }

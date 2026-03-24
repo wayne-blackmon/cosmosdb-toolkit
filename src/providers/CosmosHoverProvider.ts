@@ -9,7 +9,7 @@ export class CosmosHoverProvider implements vscode.HoverProvider {
 
   provideHover(
     document: vscode.TextDocument,
-    position: vscode.Position
+    position: vscode.Position,
   ): vscode.ProviderResult<vscode.Hover> {
     const range = document.getWordRangeAtPosition(position)
     if (!range) return
@@ -23,17 +23,12 @@ export class CosmosHoverProvider implements vscode.HoverProvider {
     if (paramHover) return new vscode.Hover(paramHover, range)
 
     // Cached full hover
-    const md = this.getCachedHover(apiFn.label, () =>
-      this.buildHover(apiFn, document)
-    )
+    const md = this.getCachedHover(apiFn.label, () => this.buildHover(apiFn, document))
 
     return new vscode.Hover(md, range)
   }
 
-  private getCachedHover(
-    key: string,
-    builder: () => vscode.MarkdownString
-  ): vscode.MarkdownString {
+  private getCachedHover(key: string, builder: () => vscode.MarkdownString): vscode.MarkdownString {
     if (this.cache.has(key)) return this.cache.get(key)!
     const md = builder()
     this.cache.set(key, md)
@@ -45,25 +40,22 @@ export class CosmosHoverProvider implements vscode.HoverProvider {
       cosmosApi.context,
       cosmosApi.collection,
       cosmosApi.request,
-      cosmosApi.response
+      cosmosApi.response,
     ]
 
     for (const group of groups) {
-      const fn = group.functions.find(f => f.label === label)
+      const fn = group.functions.find((f) => f.label === label)
       if (fn) return fn
     }
 
     return undefined
   }
 
-  private tryParameterHover(
-    fn: ApiFunction,
-    word: string
-  ): vscode.MarkdownString | null {
+  private tryParameterHover(fn: ApiFunction, word: string): vscode.MarkdownString | null {
     const sig = fn.signatures[0]
     if (!sig) return null
 
-    const param = sig.parameters.find(p => p.name === word)
+    const param = sig.parameters.find((p) => p.name === word)
     if (!param) return null
 
     const md = new vscode.MarkdownString()
@@ -72,10 +64,7 @@ export class CosmosHoverProvider implements vscode.HoverProvider {
     return md
   }
 
-  private buildHover(
-    fn: ApiFunction,
-    document: vscode.TextDocument
-  ): vscode.MarkdownString {
+  private buildHover(fn: ApiFunction, document: vscode.TextDocument): vscode.MarkdownString {
     const md = new vscode.MarkdownString()
     md.isTrusted = true
 
@@ -125,13 +114,13 @@ export class CosmosHoverProvider implements vscode.HoverProvider {
   private renderRelated(md: vscode.MarkdownString, fn: ApiFunction): void {
     if (!fn.related?.length) return
 
-    md.appendMarkdown(`Related: ${fn.related.map(r => `\`${r}\``).join(', ')}\n\n`)
+    md.appendMarkdown(`Related: ${fn.related.map((r) => `\`${r}\``).join(', ')}\n\n`)
   }
 
   private renderSnippet(
     md: vscode.MarkdownString,
     fn: ApiFunction,
-    document: vscode.TextDocument
+    document: vscode.TextDocument,
   ): void {
     if (!fn.snippet) return
 
@@ -142,7 +131,7 @@ export class CosmosHoverProvider implements vscode.HoverProvider {
     const lang = isTS ? 'ts' : 'javascript'
 
     md.appendMarkdown('```' + lang + '\n')
-    variant.body.forEach(line => md.appendMarkdown(`${line}\n`))
+    variant.body.forEach((line) => md.appendMarkdown(`${line}\n`))
     md.appendMarkdown('```\n')
   }
 }

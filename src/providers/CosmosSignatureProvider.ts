@@ -18,7 +18,7 @@ const FN_BEFORE_PAREN_REGEX = new RegExp(FN_BEFORE_PAREN_STRING)
 export class CosmosSignatureProvider implements vscode.SignatureHelpProvider {
   provideSignatureHelp(
     document: vscode.TextDocument,
-    position: vscode.Position
+    position: vscode.Position,
   ): vscode.ProviderResult<vscode.SignatureHelp> {
     const line = document.lineAt(position).text
     const prefix = line.substring(0, position.character)
@@ -31,9 +31,7 @@ export class CosmosSignatureProvider implements vscode.SignatureHelpProvider {
     const signatureHelp = new vscode.SignatureHelp()
 
     // Build all overloads
-    signatureHelp.signatures = fn.signatures.map((sig) =>
-      this.buildSignatureInformation(fn, sig)
-    )
+    signatureHelp.signatures = fn.signatures.map((sig) => this.buildSignatureInformation(fn, sig))
 
     signatureHelp.activeSignature = 0
     signatureHelp.activeParameter = this.getActiveParameter(prefix)
@@ -47,12 +45,7 @@ export class CosmosSignatureProvider implements vscode.SignatureHelpProvider {
       return null
     }
 
-    const groups = [
-      cosmosApi.context,
-      cosmosApi.collection,
-      cosmosApi.request,
-      cosmosApi.response
-    ]
+    const groups = [cosmosApi.context, cosmosApi.collection, cosmosApi.request, cosmosApi.response]
 
     for (const group of groups) {
       for (const fn of group.functions) {
@@ -83,7 +76,7 @@ export class CosmosSignatureProvider implements vscode.SignatureHelpProvider {
 
   private buildSignatureInformation(
     fn: ApiFunction,
-    sig: ApiSignature
+    sig: ApiSignature,
   ): vscode.SignatureInformation {
     const label = `${fn.label}(${sig.parameters
       .map((p) => `${p.name}${p.optional ? '?' : ''}: ${p.type}`)
@@ -91,15 +84,11 @@ export class CosmosSignatureProvider implements vscode.SignatureHelpProvider {
 
     const signatureInfo = new vscode.SignatureInformation(
       label,
-      new vscode.MarkdownString(fn.documentation)
+      new vscode.MarkdownString(fn.documentation),
     )
 
     signatureInfo.parameters = sig.parameters.map(
-      (p) =>
-        new vscode.ParameterInformation(
-          `${p.name}: ${p.type}`,
-          p.documentation ?? ''
-        )
+      (p) => new vscode.ParameterInformation(`${p.name}: ${p.type}`, p.documentation ?? ''),
     )
 
     return signatureInfo

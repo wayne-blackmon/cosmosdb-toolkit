@@ -5,22 +5,14 @@ import { cosmosApi } from '../../providers/metadata/cosmosApi'
 
 suite('Cosmos Metadata Validation', () => {
   test('Metadata matches Cosmos SDK server-side interfaces', () => {
-    const sdkFiles = [
-      'Context.d.ts',
-      'Collection.d.ts',
-      'Request.d.ts',
-      'Response.d.ts'
-    ].map(f =>
-      path.resolve(
-        'node_modules/@azure/cosmos/dist-esm/src/client',
-        f
-      )
+    const sdkFiles = ['Context.d.ts', 'Collection.d.ts', 'Request.d.ts', 'Response.d.ts'].map((f) =>
+      path.resolve('node_modules/@azure/cosmos/dist-esm/src/client', f),
     )
 
     const program = ts.createProgram(sdkFiles, {
       strict: true,
       target: ts.ScriptTarget.ES2020,
-      moduleResolution: ts.ModuleResolutionKind.NodeJs
+      moduleResolution: ts.ModuleResolutionKind.NodeJs,
     })
 
     const checker = program.getTypeChecker()
@@ -32,7 +24,7 @@ suite('Cosmos Metadata Validation', () => {
     for (const file of program.getSourceFiles()) {
       if (!file.fileName.endsWith('.d.ts')) continue
 
-      ts.forEachChild(file, node => {
+      ts.forEachChild(file, (node) => {
         if (!ts.isInterfaceDeclaration(node)) return
         if (!TARGETS.includes(node.name.text)) return
 
@@ -42,9 +34,7 @@ suite('Cosmos Metadata Validation', () => {
 
         if (!group) {
           failures.push(`Missing metadata group for ${ifaceName}`)
-          suggestions.push(
-            `Suggestion: Add metadata group "${groupName}" to cosmosApi.`
-          )
+          suggestions.push(`Suggestion: Add metadata group "${groupName}" to cosmosApi.`)
           return
         }
 
@@ -55,13 +45,13 @@ suite('Cosmos Metadata Validation', () => {
           const metaFn = group.functions.find((f: { label: string }) => f.label === name)
 
           const sdkParams = m.parameters.map((p: ts.ParameterDeclaration) =>
-            checker.typeToString(checker.getTypeAtLocation(p))
+            checker.typeToString(checker.getTypeAtLocation(p)),
           )
 
           if (!metaFn) {
             failures.push(`${ifaceName}.${name} missing in metadata`)
             suggestions.push(
-              `Suggestion: Add function "${name}" to ${groupName}.functions with signature (${sdkParams.join(', ')}).`
+              `Suggestion: Add function "${name}" to ${groupName}.functions with signature (${sdkParams.join(', ')}).`,
             )
             continue
           }
@@ -72,8 +62,8 @@ suite('Cosmos Metadata Validation', () => {
             failures.push(`${ifaceName}.${name} signature mismatch`)
             suggestions.push(
               `Suggestion: Update "${name}" signature in ${groupName}.functions\n` +
-              `  metadata: (${metaParams.join(', ')})\n` +
-              `  sdk:      (${sdkParams.join(', ')})`
+                `  metadata: (${metaParams.join(', ')})\n` +
+                `  sdk:      (${sdkParams.join(', ')})`,
             )
           }
         }

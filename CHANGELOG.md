@@ -9,12 +9,21 @@ Versions are automatically incremented via the check‑in script.
 
 ## [Unreleased]
 
-## [0.1.2] - 2026-03-24
+## [0.1.4] - 2026-03-24
 
 ### Added
 - Version bump via check-in script.
 
+## [0.1.3] - 2026-03-24
+
 ### Added
+- Version bump via check-in script.
+
+## [0.1.2] - 2026-03-24
+
+### Added
+
+- Version bump via check-in script.
 
 - Fully typed Cosmos Hover Provider with metadata‑driven documentation and signatures
 - Hover provider registration for both file‑backed and untitled documents
@@ -49,4 +58,5 @@ Versions are automatically incremented via the check‑in script.
   - Completion Provider (context, collection, request, response)
   - Signature Help Provider with overload + parameter documentation
 - Versioning pipeline using \`VERSION\` + automated CHANGELOG insertion
+
 

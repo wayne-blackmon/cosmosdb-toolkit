@@ -5,18 +5,13 @@ import * as vscode from 'vscode'
 
 suite('Extension Activation Tests', () => {
   test('extension loads and activates', async () => {
-    const extension = vscode.extensions.getExtension(
-      'wayne-blackmon.cosmosdb-toolkit',
-    )
+    const extension = vscode.extensions.getExtension('wayne-blackmon.cosmosdb-toolkit')
 
     assert.ok(extension, 'Extension should be found')
 
     await extension?.activate()
 
-    assert.ok(
-      extension?.isActive,
-      'Extension should be active after activation',
-    )
+    assert.ok(extension?.isActive, 'Extension should be active after activation')
   })
 
   test('scratchpad command is registered', async () => {

@@ -86,12 +86,14 @@ suite('Completion Provider Tests', function () {
 
       // Get the first few items to check ordering
       const topItems = list!.items.slice(0, 5)
-      const topLabels = topItems.map(i => i.label.toString())
+      const topLabels = topItems.map((i) => i.label.toString())
 
       // Collection methods should appear first
       assert.ok(
-        topLabels.some(label => label.includes('queryDocuments') || label.includes('createDocument')),
-        'Collection-specific methods should appear in top results'
+        topLabels.some(
+          (label) => label.includes('queryDocuments') || label.includes('createDocument'),
+        ),
+        'Collection-specific methods should appear in top results',
       )
     })
 
@@ -115,12 +117,12 @@ suite('Completion Provider Tests', function () {
 
       // Get the first few items to check ordering
       const topItems = list!.items.slice(0, 5)
-      const topLabels = topItems.map(i => i.label.toString())
+      const topLabels = topItems.map((i) => i.label.toString())
 
       // Context methods should appear first
       assert.ok(
-        topLabels.some(label => label === 'getCollection' || label === 'getResponse'),
-        'Context-specific methods should appear in top results'
+        topLabels.some((label) => label === 'getCollection' || label === 'getResponse'),
+        'Context-specific methods should appear in top results',
       )
     })
 
@@ -142,9 +144,7 @@ suite('Completion Provider Tests', function () {
       assert.ok(list, 'Completion list should exist')
 
       // Sproc snippets should be highly prioritized in function context
-      const sprocItems = list!.items.filter(i =>
-        i.label.toString().startsWith('cosmos.sproc')
-      )
+      const sprocItems = list!.items.filter((i) => i.label.toString().startsWith('cosmos.sproc'))
 
       assert.ok(sprocItems.length > 0, 'Should include sproc snippets')
 
@@ -152,7 +152,7 @@ suite('Completion Provider Tests', function () {
       const firstSprocItem = sprocItems[0]
       assert.ok(
         firstSprocItem.sortText! <= '0002',
-        'Sproc snippets should have high priority in function context'
+        'Sproc snippets should have high priority in function context',
       )
     })
 
@@ -173,13 +173,21 @@ suite('Completion Provider Tests', function () {
 
       assert.ok(list, 'Completion list should exist')
 
-      const item = list!.items.find(i => i.label.toString() === 'queryDocuments')
+      const item = list!.items.find((i) => i.label.toString() === 'queryDocuments')
       assert.ok(item, 'queryDocuments completion should exist in collection context')
 
       const range = getReplacementRange(item!)
       assert.ok(range, 'Completion item should include a replacement range')
-      assert.strictEqual(range!.start.character, 0, 'Range should start at beginning of dotted token')
-      assert.strictEqual(range!.end.character, content.length, 'Range should end at cursor position')
+      assert.strictEqual(
+        range!.start.character,
+        0,
+        'Range should start at beginning of dotted token',
+      )
+      assert.strictEqual(
+        range!.end.character,
+        content.length,
+        'Range should end at cursor position',
+      )
     })
   })
   suite('Snippet Completion Tests', () => {
@@ -246,10 +254,7 @@ suite('Completion Provider Tests', function () {
 
       const labels = list!.items.map((i) => i.label.toString())
 
-      assert.ok(
-        labels.includes('cosmos.udf'),
-        'Should include UDF snippet',
-      )
+      assert.ok(labels.includes('cosmos.udf'), 'Should include UDF snippet')
     })
   })
 })

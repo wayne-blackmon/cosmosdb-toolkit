@@ -14,12 +14,12 @@ export const cosmosApiCore: CosmosApi = {
           {
             label: 'getContext(): IContext',
             parameters: [],
-            returns: 'IContext'
-          }
+            returns: 'IContext',
+          },
         ],
         examples: ['// Example: const ctx = getContext()'],
         related: ['getCollection', 'getRequest', 'getResponse'],
-        notes: ['This is typically the first call in a server-side script.']
+        notes: ['This is typically the first call in a server-side script.'],
       },
       {
         label: 'getCollection',
@@ -29,12 +29,12 @@ export const cosmosApiCore: CosmosApi = {
           {
             label: 'getCollection(): ICollection',
             parameters: [],
-            returns: 'ICollection'
-          }
+            returns: 'ICollection',
+          },
         ],
         examples: ['// Example: const col = getContext().getCollection()'],
         related: ['queryDocuments', 'createDocument', 'readDocument'],
-        notes: ['Used for all document-level operations.']
+        notes: ['Used for all document-level operations.'],
       },
       {
         label: 'getRequest',
@@ -44,12 +44,12 @@ export const cosmosApiCore: CosmosApi = {
           {
             label: 'getRequest(): IRequest',
             parameters: [],
-            returns: 'IRequest'
-          }
+            returns: 'IRequest',
+          },
         ],
         examples: ['// Example: const req = getContext().getRequest()'],
         related: ['getBody', 'getValue'],
-        notes: ['Useful for reading input passed to the script.']
+        notes: ['Useful for reading input passed to the script.'],
       },
       {
         label: 'getResponse',
@@ -59,14 +59,14 @@ export const cosmosApiCore: CosmosApi = {
           {
             label: 'getResponse(): IResponse',
             parameters: [],
-            returns: 'IResponse'
-          }
+            returns: 'IResponse',
+          },
         ],
         examples: ['// Example: const res = getContext().getResponse()'],
         related: ['setBody', 'setStatusCode'],
-        notes: ['Used to control the output returned to the client.']
-      }
-    ]
+        notes: ['Used to control the output returned to the client.'],
+      },
+    ],
   },
 
   collection: {
@@ -86,20 +86,20 @@ export const cosmosApiCore: CosmosApi = {
               { name: 'options', type: 'FeedOptions', optional: true },
               {
                 name: 'callback',
-                type: '(err: IError, docs: RetrievedDocument[], info: IFeedCallbackInfo) => void'
-              }
+                type: '(err: IError, docs: RetrievedDocument[], info: IFeedCallbackInfo) => void',
+              },
             ],
-            returns: 'void'
-          }
+            returns: 'void',
+          },
         ],
         examples: [
           '// Example: Query documents',
           'const context = getContext()',
           'const collection = context.getCollection()',
-          'collection.queryDocuments(collection.getSelfLink(), \'SELECT * FROM c\', {}, callback)'
+          'collection.queryDocuments(collection.getSelfLink(), \'SELECT * FROM c\', {}, callback)',
         ],
         related: ['createDocument', 'readDocument'],
-        notes: ['Supports both SQL text and SqlQuerySpec.']
+        notes: ['Supports both SQL text and SqlQuerySpec.'],
       },
 
       {
@@ -116,12 +116,12 @@ export const cosmosApiCore: CosmosApi = {
               { name: 'options', type: 'RequestOptions', optional: true },
               {
                 name: 'callback',
-                type: '(err: IError, doc: RetrievedDocument) => void'
-              }
+                type: '(err: IError, doc: RetrievedDocument) => void',
+              },
             ],
-            returns: 'void'
-          }
-        ]
+            returns: 'void',
+          },
+        ],
       },
 
       {
@@ -137,12 +137,12 @@ export const cosmosApiCore: CosmosApi = {
               { name: 'options', type: 'RequestOptions', optional: true },
               {
                 name: 'callback',
-                type: '(err: IError, doc: RetrievedDocument) => void'
-              }
+                type: '(err: IError, doc: RetrievedDocument) => void',
+              },
             ],
-            returns: 'void'
-          }
-        ]
+            returns: 'void',
+          },
+        ],
       },
 
       {
@@ -159,12 +159,12 @@ export const cosmosApiCore: CosmosApi = {
               { name: 'options', type: 'RequestOptions', optional: true },
               {
                 name: 'callback',
-                type: '(err: IError, doc: RetrievedDocument) => void'
-              }
+                type: '(err: IError, doc: RetrievedDocument) => void',
+              },
             ],
-            returns: 'void'
-          }
-        ]
+            returns: 'void',
+          },
+        ],
       },
 
       {
@@ -178,11 +178,11 @@ export const cosmosApiCore: CosmosApi = {
             parameters: [
               { name: 'documentLink', type: 'string' },
               { name: 'options', type: 'RequestOptions', optional: true },
-              { name: 'callback', type: '(err: IError) => void' }
+              { name: 'callback', type: '(err: IError) => void' },
             ],
-            returns: 'void'
-          }
-        ]
+            returns: 'void',
+          },
+        ],
       },
 
       {
@@ -199,14 +199,14 @@ export const cosmosApiCore: CosmosApi = {
               { name: 'options', type: 'RequestOptions', optional: true },
               {
                 name: 'callback',
-                type: '(err: IError, doc: RetrievedDocument) => void'
-              }
+                type: '(err: IError, doc: RetrievedDocument) => void',
+              },
             ],
-            returns: 'void'
-          }
-        ]
-      }
-    ]
+            returns: 'void',
+          },
+        ],
+      },
+    ],
   },
 
   request: {
@@ -216,9 +216,7 @@ export const cosmosApiCore: CosmosApi = {
         label: 'getBody',
         detail: 'Get the request body.',
         documentation: 'Returns the body of the incoming request.',
-        signatures: [
-          { label: 'getBody(): any', parameters: [], returns: 'any' }
-        ]
+        signatures: [{ label: 'getBody(): any', parameters: [], returns: 'any' }],
       },
       {
         label: 'setBody',
@@ -228,9 +226,9 @@ export const cosmosApiCore: CosmosApi = {
           {
             label: 'setBody(body: any): void',
             parameters: [{ name: 'body', type: 'any' }],
-            returns: 'void'
-          }
-        ]
+            returns: 'void',
+          },
+        ],
       },
       {
         label: 'getValue',
@@ -240,9 +238,9 @@ export const cosmosApiCore: CosmosApi = {
           {
             label: 'getValue(): any',
             parameters: [],
-            returns: 'any'
-          }
-        ]
+            returns: 'any',
+          },
+        ],
       },
       {
         label: 'setValue',
@@ -252,11 +250,11 @@ export const cosmosApiCore: CosmosApi = {
           {
             label: 'setValue(value: any): void',
             parameters: [{ name: 'value', type: 'any' }],
-            returns: 'void'
-          }
-        ]
-      }
-    ]
+            returns: 'void',
+          },
+        ],
+      },
+    ],
   },
 
   response: {
@@ -270,9 +268,9 @@ export const cosmosApiCore: CosmosApi = {
           {
             label: 'setStatusCode(code: number): void',
             parameters: [{ name: 'code', type: 'number' }],
-            returns: 'void'
-          }
-        ]
+            returns: 'void',
+          },
+        ],
       },
       {
         label: 'setBody',
@@ -282,9 +280,9 @@ export const cosmosApiCore: CosmosApi = {
           {
             label: 'setBody(body: any): void',
             parameters: [{ name: 'body', type: 'any' }],
-            returns: 'void'
-          }
-        ]
+            returns: 'void',
+          },
+        ],
       },
       {
         label: 'getBody',
@@ -294,10 +292,10 @@ export const cosmosApiCore: CosmosApi = {
           {
             label: 'getBody(): any',
             parameters: [],
-            returns: 'any'
-          }
-        ]
-      }
-    ]
-  }
+            returns: 'any',
+          },
+        ],
+      },
+    ],
+  },
 }

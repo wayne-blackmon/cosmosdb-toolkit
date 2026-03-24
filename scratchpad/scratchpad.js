@@ -74,7 +74,7 @@ function exampleQuery() {
         } else {
           response.setBody(results)
         }
-      }
+      },
     )
 
     if (!accepted) throw new Error('Query not accepted by server')
@@ -92,14 +92,10 @@ function testInsert() {
   const response = context.getResponse()
   const request = context.getRequest()
 
-  collection.createDocument(
-    collection.getSelfLink(),
-    sampleDoc,
-    function (err, created) {
-      if (err) throw err
-      response.setBody({ inserted: created })
-    }
-  )
+  collection.createDocument(collection.getSelfLink(), sampleDoc, function (err, created) {
+    if (err) throw err
+    response.setBody({ inserted: created })
+  })
 }
 
 // ------------------------------------------------------------
@@ -110,11 +106,8 @@ function testRead() {
   const collection = context.getCollection()
   const response = getContext().getResponse()
 
-  collection.readDocument(
-    collection.getSelfLink() + '/docs/' + sampleId,
-    function (err, doc) {
-      if (err) throw err
-      response.setBody({ read: doc })
-    }
-  )
+  collection.readDocument(collection.getSelfLink() + '/docs/' + sampleId, function (err, doc) {
+    if (err) throw err
+    response.setBody({ read: doc })
+  })
 }

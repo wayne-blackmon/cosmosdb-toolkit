@@ -13,7 +13,7 @@ suite('CosmosHoverProvider (compact)', () => {
           const context = getContext()
           context.getCollection()
         }
-      `
+      `,
     })
 
     const editor = await vscode.window.showTextDocument(doc)
@@ -24,19 +24,17 @@ suite('CosmosHoverProvider (compact)', () => {
     const hovers = await vscode.commands.executeCommand<vscode.Hover[]>(
       'vscode.executeHoverProvider',
       doc.uri,
-      position
+      position,
     )
 
     assert.ok(hovers && hovers.length > 0)
 
-    const apiEntry = cosmosApi.context.functions.find(
-      f => f.label === 'getCollection'
-    )
+    const apiEntry = cosmosApi.context.functions.find((f) => f.label === 'getCollection')
     assert.ok(apiEntry)
 
-    const cosmosHover = hovers.find(h => {
+    const cosmosHover = hovers.find((h) => {
       const text = h.contents
-        .map(c => (c instanceof vscode.MarkdownString ? c.value : String(c)))
+        .map((c) => (c instanceof vscode.MarkdownString ? c.value : String(c)))
         .join('\n')
       return text.includes(apiEntry.label)
     })
@@ -44,7 +42,7 @@ suite('CosmosHoverProvider (compact)', () => {
     assert.ok(cosmosHover)
 
     const hoverText = cosmosHover.contents
-      .map(c => (c instanceof vscode.MarkdownString ? c.value : String(c)))
+      .map((c) => (c instanceof vscode.MarkdownString ? c.value : String(c)))
       .join('\n')
 
     assert.ok(hoverText.includes(apiEntry.label))
@@ -60,7 +58,7 @@ suite('CosmosHoverProvider (compact)', () => {
         function test() {
           getContext().getCollection().queryDocuments('x', 'y', {}, (err, docs, info) => {})
         }
-      `
+      `,
     })
 
     const editor = await vscode.window.showTextDocument(doc)
@@ -71,18 +69,22 @@ suite('CosmosHoverProvider (compact)', () => {
     const hovers = await vscode.commands.executeCommand<vscode.Hover[]>(
       'vscode.executeHoverProvider',
       doc.uri,
-      position
+      position,
     )
 
     const hoverText = hovers
-      .flatMap(h => h.contents)
-      .map(c => (c instanceof vscode.MarkdownString ? c.value : String(c)))
+      .flatMap((h) => h.contents)
+      .map((c) => (c instanceof vscode.MarkdownString ? c.value : String(c)))
       .join('\n')
 
     assert.ok(hoverText.includes('queryDocuments'))
     assert.ok(hoverText.includes('collectionLink: string'))
     assert.ok(hoverText.includes('query: string | SqlQuerySpec'))
-    assert.ok(hoverText.includes('callback: (err: IError, docs: RetrievedDocument[], info: IFeedCallbackInfo) => void'))
+    assert.ok(
+      hoverText.includes(
+        'callback: (err: IError, docs: RetrievedDocument[], info: IFeedCallbackInfo) => void',
+      ),
+    )
   })
 
   test('No hover appears for unknown identifiers', async () => {
@@ -92,7 +94,7 @@ suite('CosmosHoverProvider (compact)', () => {
         function test() {
           const foo = barBazQux
         }
-      `
+      `,
     })
 
     const editor = await vscode.window.showTextDocument(doc)
@@ -104,17 +106,15 @@ suite('CosmosHoverProvider (compact)', () => {
       (await vscode.commands.executeCommand<vscode.Hover[]>(
         'vscode.executeHoverProvider',
         doc.uri,
-        position
+        position,
       )) || []
 
-    const cosmosHover = hovers.find(h => {
+    const cosmosHover = hovers.find((h) => {
       const text = h.contents
-        .map(c => (c instanceof vscode.MarkdownString ? c.value : String(c)))
+        .map((c) => (c instanceof vscode.MarkdownString ? c.value : String(c)))
         .join('\n')
 
-      return cosmosApi.context.functions.some(f =>
-        text.includes(f.label)
-      )
+      return cosmosApi.context.functions.some((f) => text.includes(f.label))
     })
 
     assert.strictEqual(cosmosHover, undefined)

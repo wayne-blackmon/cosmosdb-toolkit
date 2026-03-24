@@ -4,15 +4,9 @@ import tseslint from '@typescript-eslint/eslint-plugin'
 import parser from '@typescript-eslint/parser'
 
 export default [
-
   // Ignore VS Code test harness, build output, and scratchpad
   {
-    ignores: [
-      '.vscode-test/**',
-      'out/**',
-      'node_modules/**',
-      'scratchpad/**'
-    ]
+    ignores: ['.vscode-test/**', 'out/**', 'node_modules/**', 'scratchpad/**'],
   },
 
   // TypeScript rules
@@ -23,19 +17,19 @@ export default [
       parser,
       parserOptions: {
         project: './tsconfig.json',
-        tsconfigRootDir: import.meta.dirname
-      }
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
 
     plugins: {
-      '@typescript-eslint': tseslint
+      '@typescript-eslint': tseslint,
     },
 
     rules: {
       quotes: ['error', 'single'],
       semi: ['error', 'never'],
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-      '@typescript-eslint/no-explicit-any': 'off'
-    }
-  }
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
 ]

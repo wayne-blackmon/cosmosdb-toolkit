@@ -4,14 +4,11 @@ import { CosmosApi, CosmosFunctionSnippet } from './metadataSchema'
 import { cosmosApiCore } from './cosmosApi.core'
 import { cosmosSnippets } from './cosmosApi.snippets'
 
-export const cosmosApi: CosmosApi = mergeMetadataWithSnippets(
-  cosmosApiCore,
-  cosmosSnippets
-)
+export const cosmosApi: CosmosApi = mergeMetadataWithSnippets(cosmosApiCore, cosmosSnippets)
 
 function mergeMetadataWithSnippets(
   core: CosmosApi,
-  snippets: Record<string, Record<string, CosmosFunctionSnippet>>
+  snippets: Record<string, Record<string, CosmosFunctionSnippet>>,
 ): CosmosApi {
   // Deep clone to avoid mutating the core metadata
   const result: CosmosApi = structuredClone(core)

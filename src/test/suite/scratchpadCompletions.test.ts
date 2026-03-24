@@ -9,7 +9,7 @@ function getReplacementRange(item: vscode.CompletionItem): vscode.Range | undefi
 
 async function getCompletionsAtLineEnd(
   content: string,
-  language: 'javascript' | 'typescript'
+  language: 'javascript' | 'typescript',
 ): Promise<vscode.CompletionList> {
   const cursorToken = '|'
   const offset = content.indexOf(cursorToken)
@@ -36,68 +36,58 @@ async function getCompletionsAtLineEnd(
 
 suite('Scratchpad Completion Tests', () => {
   test('TS scratchpad fixture: cosmos. suggests cosmos.sproc snippets', async () => {
-    const content = [
-      'export function testSproc(input: any): void {',
-      '  cosmos.|',
-      '}',
-    ].join('\n')
+    const content = ['export function testSproc(input: any): void {', '  cosmos.|', '}'].join('\n')
 
     const list = await getCompletionsAtLineEnd(content, 'typescript')
-    const labels = list.items.map(i => i.label.toString())
+    const labels = list.items.map((i) => i.label.toString())
 
     assert.ok(
-      labels.some(l => l.startsWith('cosmos.sproc.')),
-      'cosmos. should include cosmos.sproc.* snippet completions'
+      labels.some((l) => l.startsWith('cosmos.sproc.')),
+      'cosmos. should include cosmos.sproc.* snippet completions',
     )
   })
 
   test('TS scratchpad fixture: sproc. suggests cosmos.sproc snippets', async () => {
-    const content = [
-      'export function testSproc(input: any): void {',
-      '  sproc.|',
-      '}',
-    ].join('\n')
+    const content = ['export function testSproc(input: any): void {', '  sproc.|', '}'].join('\n')
 
     const list = await getCompletionsAtLineEnd(content, 'typescript')
-    const labels = list.items.map(i => i.label.toString())
+    const labels = list.items.map((i) => i.label.toString())
 
     assert.ok(
-      labels.some(l => l.startsWith('cosmos.sproc.')),
-      'sproc. should include cosmos.sproc.* snippet completions'
+      labels.some((l) => l.startsWith('cosmos.sproc.')),
+      'sproc. should include cosmos.sproc.* snippet completions',
     )
   })
 
   test('TS scratchpad fixture: cosmos.sproc. replaces full dotted prefix', async () => {
-    const content = [
-      'export function testSproc(input: any): void {',
-      '  cosmos.sproc.|',
-      '}',
-    ].join('\n')
+    const content = ['export function testSproc(input: any): void {', '  cosmos.sproc.|', '}'].join(
+      '\n',
+    )
 
     const list = await getCompletionsAtLineEnd(content, 'typescript')
-    const item = list.items.find(i => i.label.toString() === 'cosmos.sproc.basic')
+    const item = list.items.find((i) => i.label.toString() === 'cosmos.sproc.basic')
 
     assert.ok(item, 'Expected cosmos.sproc.basic completion item')
 
     const range = getReplacementRange(item!)
     assert.ok(range, 'Completion item should define a replacement range')
-    assert.strictEqual(range!.start.character, 2, 'Range should start at the beginning of "cosmos.sproc."')
+    assert.strictEqual(
+      range!.start.character,
+      2,
+      'Range should start at the beginning of "cosmos.sproc."',
+    )
     assert.strictEqual(range!.end.character, 15, 'Range should end at the end of "cosmos.sproc."')
   })
 
   test('JS scratchpad fixture: typing sproc suggests stored procedure snippets', async () => {
-    const content = [
-      'function run() {',
-      '  sproc|',
-      '}',
-    ].join('\n')
+    const content = ['function run() {', '  sproc|', '}'].join('\n')
 
     const list = await getCompletionsAtLineEnd(content, 'javascript')
-    const labels = list.items.map(i => i.label.toString())
+    const labels = list.items.map((i) => i.label.toString())
 
     assert.ok(
-      labels.some(l => l.startsWith('cosmos.sproc')),
-      'sproc should include stored procedure snippet completions'
+      labels.some((l) => l.startsWith('cosmos.sproc')),
+      'sproc should include stored procedure snippet completions',
     )
   })
 })

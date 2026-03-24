@@ -7,7 +7,6 @@ export interface SprocSnippet {
 }
 
 export const sprocSnippets: SprocSnippet[] = [
-
   //
   // 1. BASIC STORED PROCEDURE
   //
@@ -22,8 +21,8 @@ export const sprocSnippets: SprocSnippet[] = [
       '',
       '  // TODO: implement logic',
       '  response.setBody({ ok: true, input })',
-      '}'
-    ]
+      '}',
+    ],
   },
 
   //
@@ -65,8 +64,8 @@ export const sprocSnippets: SprocSnippet[] = [
       '  }',
       '',
       '  run()',
-      '}'
-    ]
+      '}',
+    ],
   },
 
   //
@@ -106,8 +105,8 @@ export const sprocSnippets: SprocSnippet[] = [
       '  }',
       '',
       '  insertNext()',
-      '}'
-    ]
+      '}',
+    ],
   },
 
   //
@@ -151,8 +150,8 @@ export const sprocSnippets: SprocSnippet[] = [
       '  )',
       '',
       '  if (!accepted) throw new Error(\'Query not accepted by server\')',
-      '}'
-    ]
+      '}',
+    ],
   },
 
   //
@@ -170,8 +169,8 @@ export const sprocSnippets: SprocSnippet[] = [
       '  doc.modifiedAt = new Date().toISOString()',
       '',
       '  request.setBody(doc)',
-      '}'
-    ]
+      '}',
+    ],
   },
 
   //
@@ -194,8 +193,8 @@ export const sprocSnippets: SprocSnippet[] = [
       '  }',
       '',
       '  response.setBody(wrapped)',
-      '}'
-    ]
+      '}',
+    ],
   },
 
   //
@@ -208,7 +207,7 @@ export const sprocSnippets: SprocSnippet[] = [
       'export function ${1:udfName}(${2:value}) {',
       '  // Pure function — no context access allowed',
       '  return ${2:value}',
-      '}'
-    ]
-  }
+      '}',
+    ],
+  },
 ]

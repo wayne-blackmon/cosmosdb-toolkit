@@ -7,7 +7,7 @@ import { sprocSnippets } from '../snippets/sprocs'
 export class CosmosCompletionProvider implements vscode.CompletionItemProvider {
   provideCompletionItems(
     document: vscode.TextDocument,
-    _position: vscode.Position
+    _position: vscode.Position,
   ): vscode.ProviderResult<vscode.CompletionItem[]> {
     const isTS = document.languageId === 'typescript'
     const line = document.lineAt(_position.line).text
@@ -24,10 +24,7 @@ export class CosmosCompletionProvider implements vscode.CompletionItemProvider {
     const isBlankLineContext = prefix.length === 0 && /^\s*$/.test(beforeCursor)
     const isSprocPrefixContext = prefix.length > 0 && prefix.endsWith('.')
     const isDotContext =
-      isCollectionContext ||
-      isContextContext ||
-      isRequestContext ||
-      isResponseContext
+      isCollectionContext || isContextContext || isRequestContext || isResponseContext
 
     if (!isDotContext && !isFunctionNameContext && !isBlankLineContext && !isSprocPrefixContext) {
       return []
@@ -82,10 +79,7 @@ export class CosmosCompletionProvider implements vscode.CompletionItemProvider {
           continue
         }
 
-        if (
-          prefix.length > 0 &&
-          !fn.label.toLowerCase().startsWith(prefix.toLowerCase())
-        ) {
+        if (prefix.length > 0 && !fn.label.toLowerCase().startsWith(prefix.toLowerCase())) {
           continue
         }
 
@@ -111,10 +105,9 @@ export class CosmosCompletionProvider implements vscode.CompletionItemProvider {
       const matchesPrefix =
         showOnBlankLine ||
         snip.prefix.toLowerCase().startsWith(pfx) ||
-        (normalizedPrefix.length > 0 && (
-          normalizedSnippetPrefix.startsWith(normalizedPrefix) ||
-          normalizedSegments.some(segment => segment.startsWith(normalizedPrefix))
-        ))
+        (normalizedPrefix.length > 0 &&
+          (normalizedSnippetPrefix.startsWith(normalizedPrefix) ||
+            normalizedSegments.some((segment) => segment.startsWith(normalizedPrefix))))
 
       if (!matchesPrefix) continue
 

@@ -2,10 +2,14 @@
   "name": "cosmosdb-toolkit",
   "displayName": "Cosmos DB Toolkit",
   "description": "Developer tooling for Azure Cosmos DB server-side JavaScript (stored procedures, triggers, UDFs).",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "publisher": "wayne-blackmon",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wayneblackmon/cosmosdb-toolkit.git"
+  },
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.109.0"
   },
   "categories": [
     "Programming Languages",
@@ -30,7 +34,8 @@
     "test": "npm run compile && node ./out/test/runTest.js",
     "verify": "npm run compile && npm run lint && node ./out/test/runTest.js",
     "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix"
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@types/mocha": "^10.0.0",
@@ -42,7 +47,9 @@
     "eslint": "^10.0.2",
     "glob": "^10.3.0",
     "mocha": "^10.0.0",
+    "prettier": "^3.8.1",
     "typescript": "^5.0.0"
   }
 }
+
 

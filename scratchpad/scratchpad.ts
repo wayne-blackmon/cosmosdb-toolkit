@@ -18,23 +18,14 @@ interface ICollection {
 
   queryDocuments(
     link: string,
-    query:
-      | string
-      | { query: string; parameters?: { name: string; value: any }[] },
+    query: string | { query: string; parameters?: { name: string; value: any }[] },
     options: any,
-    callback: (err: any, docs: any[], info: any) => void
+    callback: (err: any, docs: any[], info: any) => void,
   ): boolean
 
-  createDocument(
-    link: string,
-    doc: any,
-    callback: (err: any, created?: any) => void
-  ): boolean
+  createDocument(link: string, doc: any, callback: (err: any, created?: any) => void): boolean
 
-  readDocument(
-    link: string,
-    callback: (err: any, doc?: any) => void
-  ): boolean
+  readDocument(link: string, callback: (err: any, doc?: any) => void): boolean
 }
 
 interface IRequest {
@@ -123,7 +114,7 @@ export function exampleQuery(): void {
         } else {
           response.setBody(results)
         }
-      }
+      },
     )
 
     if (!accepted) throw new Error('Query not accepted by server')
@@ -140,14 +131,10 @@ export function testInsert(): void {
   const collection = context.getCollection()
   const response = context.getResponse()
 
-  collection.createDocument(
-    collection.getSelfLink(),
-    sampleDoc,
-    (err: any, created?: any) => {
-      if (err) throw err
-      response.setBody({ inserted: created })
-    }
-  )
+  collection.createDocument(collection.getSelfLink(), sampleDoc, (err: any, created?: any) => {
+    if (err) throw err
+    response.setBody({ inserted: created })
+  })
 }
 
 // ------------------------------------------------------------
@@ -158,11 +145,8 @@ export function testRead(): void {
   const collection = context.getCollection()
   const response = context.getResponse()
 
-  collection.readDocument(
-    collection.getSelfLink() + '/docs/' + sampleId,
-    (err: any, doc?: any) => {
-      if (err) throw err
-      response.setBody({ read: doc })
-    }
-  )
+  collection.readDocument(collection.getSelfLink() + '/docs/' + sampleId, (err: any, doc?: any) => {
+    if (err) throw err
+    response.setBody({ read: doc })
+  })
 }
