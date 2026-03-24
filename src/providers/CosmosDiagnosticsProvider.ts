@@ -1,3 +1,5 @@
+// src/providers/CosmosDiagnosticsProvider.ts
+
 import * as vscode from 'vscode'
 import { cosmosApi } from './metadata/cosmosApi'
 
@@ -70,8 +72,13 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
         return true
     }
 
-
     private refreshDiagnostics(document: vscode.TextDocument): void {
+        // ⭐ NEW: Skip diagnostics for scratchpads
+        if (document.uri.path.includes('scratchpad')) {
+            this.collection.set(document.uri, [])
+            return
+        }
+
         const diagnostics: vscode.Diagnostic[] = []
         const text = document.getText()
 
@@ -106,7 +113,6 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
         text: string,
         diagnostics: vscode.Diagnostic[]
     ): void {
-        // Match getXxx() calls that are not method calls (not preceded by a dot)
         const entryPointPatternString = '(?<!\\.)\\bget[A-Z][A-Za-z0-9_]*\\s*\\('
         const entryPointPattern = new RegExp(entryPointPatternString, 'g')
         let match: RegExpExecArray | null
@@ -117,10 +123,7 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
 
             if (!this.entryPoints.has(name)) {
                 const position = document.positionAt(match.index)
-                const range = new vscode.Range(
-                    position,
-                    position.translate(0, name.length)
-                )
+                const range = new vscode.Range(position, position.translate(0, name.length))
 
                 const diagnostic = new vscode.Diagnostic(
                     range,
@@ -142,7 +145,6 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
         const functionCallPatternString = '\\b(?:[A-Za-z0-9_]+\\.)?([A-Za-z0-9_]+)\\s*\\('
         const functionCallPattern = new RegExp(functionCallPatternString, 'g')
 
-        // Build a set of all known Cosmos function names
         const knownFunctions = new Set<string>()
         for (const group of Object.values(cosmosApi)) {
             for (const fn of group.functions) {
@@ -154,13 +156,9 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
         while ((match = functionCallPattern.exec(text)) !== null) {
             const name = match[1]
 
-            // Skip entry points (handled separately)
             if (this.entryPoints.has(name)) continue
-
-            // Skip obvious non‑API JS identifiers
             if (['function', 'if', 'for', 'while', 'return', 'switch'].includes(name)) continue
 
-            // Skip function definitions (e.g., "function foo()" or "const foo = function()")
             const matchStart = match.index
             const beforeMatch = text.substring(Math.max(0, matchStart - 20), matchStart)
             if (/\bfunction\s+$/.test(beforeMatch) || /=\s*function\s*$/.test(beforeMatch)) {
@@ -169,10 +167,7 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
 
             if (!knownFunctions.has(name)) {
                 const position = document.positionAt(match.index)
-                const range = new vscode.Range(
-                    position,
-                    position.translate(0, name.length)
-                )
+                const range = new vscode.Range(position, position.translate(0, name.length))
 
                 const diagnostic = new vscode.Diagnostic(
                     range,
@@ -184,5 +179,4 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
             }
         }
     }
-
 }

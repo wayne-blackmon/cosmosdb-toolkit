@@ -1,50 +1,76 @@
-// src/test/suite/signatureProvider.test.ts
-
 import * as assert from 'assert'
-import * as vscode from 'vscode'
+import * as fs from 'fs/promises'
+import * as os from 'os'
 import * as path from 'path'
-import * as fs from 'fs'
+import * as vscode from 'vscode'
+
+async function getSignatureHelpAtCursor(
+    sourceWithCursor: string,
+    language: 'javascript' | 'typescript' = 'typescript'
+): Promise<vscode.SignatureHelp | undefined> {
+    const cursorToken = '|'
+    const offset = sourceWithCursor.indexOf(cursorToken)
+    assert.ok(offset >= 0, 'Fixture content must include a cursor marker (|)')
+
+    const source = sourceWithCursor.replace(cursorToken, '')
+    const extension = language === 'typescript' ? 'ts' : 'js'
+    const tempFilePath = path.join(
+        os.tmpdir(),
+        `.tmp-signature-provider-${Date.now()}-${Math.random().toString(16).slice(2)}.${extension}`,
+    )
+
+    await fs.writeFile(tempFilePath, source, 'utf8')
+
+    try {
+        const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(tempFilePath))
+        await vscode.languages.setTextDocumentLanguage(doc, language)
+        const position = doc.positionAt(offset)
+
+        return await vscode.commands.executeCommand<vscode.SignatureHelp>(
+            'vscode.executeSignatureHelpProvider',
+            doc.uri,
+            position,
+        )
+    } finally {
+        await fs.unlink(tempFilePath).catch(() => undefined)
+    }
+}
 
 suite('Signature Provider Tests', () => {
-  const testFilePath = path.join(__dirname, 'signatureTest.js')
+    test('signature help appears for getContext()', async () => {
+        const sig = await getSignatureHelpAtCursor('const ctx = getContext(|);')
 
-  suiteSetup(() => {
-    fs.writeFileSync(
-      testFilePath,
-`function run() {
-  getContext().getCollection().createDocument(
-);
-}`
-    )
-  })
+        assert.ok(sig, 'SignatureHelp should exist')
+        assert.ok(sig!.signatures.length > 0, 'Should contain at least one signature')
+        assert.ok(sig!.signatures[0].label.startsWith('getContext('))
+        assert.strictEqual(sig!.signatures[0].parameters.length, 0)
+    })
 
-  suiteTeardown(() => {
-    if (fs.existsSync(testFilePath)) {
-      fs.unlinkSync(testFilePath)
-    }
-  })
+    test('signature help appears for createDocument()', async () => {
+        const sig = await getSignatureHelpAtCursor(
+            [
+                'const collection = getContext().getCollection();',
+                'collection.createDocument(collection.getSelfLink(), { id: "x" }, |);',
+            ].join('\n'),
+        )
 
-  test('Signature help appears for createDocument(', async () => {
-    const opened = await vscode.workspace.openTextDocument(testFilePath)
-    const doc = await vscode.languages.setTextDocumentLanguage(opened, 'javascript')
-    await vscode.window.showTextDocument(doc)
+        assert.ok(sig, 'SignatureHelp should exist')
+        assert.ok(sig!.signatures.length > 0, 'Should contain at least one signature')
+        assert.ok(sig!.signatures[0].parameters.length >= 3)
+        assert.ok(sig!.signatures[0].label.startsWith('createDocument('))
+        assert.strictEqual(sig!.activeParameter, 2)
+    })
 
-    const lineIndex = 1
-    const line = doc.lineAt(lineIndex).text
-    const charIndex = line.indexOf('createDocument(') + 'createDocument('.length
+    test('active parameter index tracks commas for queryDocuments()', async () => {
+        const sig = await getSignatureHelpAtCursor(
+            [
+                'const collection = getContext().getCollection();',
+                'collection.queryDocuments(collection.getSelfLink(), "SELECT * FROM c", |);',
+            ].join('\n'),
+        )
 
-    const pos = new vscode.Position(lineIndex, charIndex)
-
-    const sig = await vscode.commands.executeCommand<vscode.SignatureHelp>(
-      'vscode.executeSignatureHelpProvider',
-      doc.uri,
-      pos
-    )
-
-    assert.ok(sig, 'SignatureHelp should exist')
-    assert.ok(sig!.signatures.length > 0, 'Should contain at least one signature')
-
-    const signature = sig!.signatures[0]
-    assert.strictEqual(signature.parameters.length, 4)
-  })
+        assert.ok(sig, 'SignatureHelp should exist')
+        assert.ok(sig!.signatures.length > 0, 'Should contain at least one signature')
+        assert.strictEqual(sig!.activeParameter, 2)
+    })
 })

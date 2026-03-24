@@ -4,12 +4,12 @@
     and optional Dry-Run mode.
 
 .DESCRIPTION
-    - Reads VERSION file (creates 0.0.1 if missing)
-    - Increments patch with cascading rollover
+    - Ensures VERSION exists (creates 0.0.1 if missing)
+    - Increments patch with cascading rollover (x.y.9 -> x.(y+1).0)
     - Updates VERSION, package.json, and CHANGELOG.md
-    - Runs compile, lint, test
-    - Commits, rebases, and pushes (unless -DryRun is used)
-    - Dry-Run mode simulates all actions without modifying any files
+    - Runs verify gate (compile + lint + tests)
+    - Commits and pushes (unless -DryRun is used)
+    - Dry-Run mode simulates write and git mutation steps
 
 .USAGE
     .\checkin.ps1 [-Message "your commit message"] [-DryRun]
@@ -19,18 +19,10 @@
         Runs the full pipeline using the default commit message "checkpoint".
 
     .\checkin.ps1 -Message "signature provider hardening"
-        Bumps version, updates CHANGELOG, compiles, lints, tests,
-        commits with the provided message, rebases, and pushes.
+        Bumps version, updates CHANGELOG, runs verify, commits, and pushes.
 
     .\checkin.ps1 -DryRun
-        Shows what WOULD happen, without modifying any files.
-
-.NOTES
-    - VERSION is auto-incremented (patch with cascading rollover).
-    - CHANGELOG.md is updated by inserting a new version block above [Unreleased].
-    - package.json version is kept in sync with VERSION.
-    - The script stops immediately on build, lint, or test failure.
-    - Dry-Run mode performs all validation steps but does not write or commit anything.
+        Shows what WOULD happen, without writing files or mutating git state.
 #>
 
 param(
@@ -40,6 +32,9 @@ param(
     [switch]$DryRun
 )
 
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+
 function Write-DryRun {
     param([string]$Text)
     if ($DryRun) {
@@ -47,34 +42,156 @@ function Write-DryRun {
     }
 }
 
-Write-Host "=== CosmosDB Toolkit: Check-in Script ===" -ForegroundColor Cyan
-if ($DryRun) {
-    Write-Host "Running in DRY-RUN mode (no changes will be written)" -ForegroundColor Yellow
-}
+function Invoke-CheckedCommand {
+    param(
+        [Parameter(Mandatory = $true)][string]$Title,
+        [Parameter(Mandatory = $true)][scriptblock]$Action
+    )
 
-# --- Ensure VERSION file exists ---
-$versionFile = "VERSION"
-
-if (-not (Test-Path $versionFile)) {
-    if ($DryRun) {
-        Write-DryRun "Would create VERSION file with 0.0.1"
-    } else {
-        Write-Host "VERSION file not found. Creating with 0.0.1" -ForegroundColor Yellow
-        "0.0.1" | Out-File $versionFile -Encoding utf8
+    Write-Host "`n--- $Title ---" -ForegroundColor DarkCyan
+    & $Action
+    if ($LASTEXITCODE -ne 0) {
+        throw "$Title failed with exit code $LASTEXITCODE."
     }
 }
 
-# --- Read version ---
-$currentVersion = Get-Content $versionFile -Raw
+function Update-Changelog {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string]$Version,
+        [switch]$DryRun
+    )
+
+    $today = Get-Date -Format 'yyyy-MM-dd'
+    $releaseHeader = "## [$Version] - $today"
+    $releaseBlock = @"
+$releaseHeader
+
+### Added
+- Version bump via check-in script.
+
+"@
+
+    if (-not (Test-Path $Path)) {
+        $initial = @"
+# Changelog
+
+All notable changes to the **cosmosdb-toolkit** extension will be documented in this file.
+
+## [Unreleased]
+
+$releaseBlock
+"@
+
+        if ($DryRun) {
+            Write-DryRun "Would create CHANGELOG.md with Unreleased and $Version section"
+        }
+        else {
+            Set-Content -Path $Path -Value $initial -Encoding utf8
+        }
+        return
+    }
+
+    $content = Get-Content -Path $Path -Raw
+
+    if ($content -match [regex]::Escape("## [$Version]")) {
+        Write-Host "CHANGELOG already contains version $Version. Skipping insertion." -ForegroundColor Yellow
+        return
+    }
+
+    if ($content -match '(?m)^## \[Unreleased\]\s*$') {
+        $updated = [regex]::Replace(
+            $content,
+            '(?m)^## \[Unreleased\]\s*$',
+            "## [Unreleased]`r`n`r`n$releaseBlock",
+            1
+        )
+    }
+    else {
+        $updated = $content.TrimEnd() + "`r`n`r`n## [Unreleased]`r`n`r`n$releaseBlock"
+    }
+
+    if ($DryRun) {
+        Write-DryRun "Would insert version $Version section into CHANGELOG.md"
+    }
+    else {
+        Set-Content -Path $Path -Value $updated -Encoding utf8
+    }
+}
+
+function Update-PackageVersion {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string]$Version,
+        [switch]$DryRun
+    )
+
+    if (-not (Test-Path $Path)) {
+        throw "package.json not found at $Path"
+    }
+
+    $content = Get-Content -Path $Path -Raw
+    $updated = [regex]::Replace(
+        $content,
+        '"version"\s*:\s*"[^"]+"',
+        ('"version": "{0}"' -f $Version),
+        1
+    )
+
+    if ($updated -eq $content) {
+        throw 'Failed to update package.json version field. Pattern not found.'
+    }
+
+    if ($DryRun) {
+        Write-DryRun "Would update package.json version to $Version"
+    }
+    else {
+        Set-Content -Path $Path -Value $updated -Encoding utf8
+    }
+}
+
+Write-Host '=== CosmosDB Toolkit: Check-in Script ===' -ForegroundColor Cyan
+if ($DryRun) {
+    Write-Host 'Running in DRY-RUN mode (no files or git state will be mutated)' -ForegroundColor Yellow
+}
+
+$versionFile = 'VERSION'
+$packageJsonPath = 'package.json'
+$changelogPath = 'CHANGELOG.md'
+
+# Ensure we are in a git repository first.
+Invoke-CheckedCommand -Title 'Git Status' -Action { git status --short }
+
+# Rebase before modifying files so post-rebase state is what gets validated.
+if ($DryRun) {
+    Write-DryRun 'Would run: git pull --rebase --autostash'
+}
+else {
+    Invoke-CheckedCommand -Title 'Git Pull (rebase + autostash)' -Action { git pull --rebase --autostash }
+}
+
+# Ensure VERSION exists.
+if (-not (Test-Path $versionFile)) {
+    if ($DryRun) {
+        Write-DryRun 'Would create VERSION file with 0.0.1'
+    }
+    else {
+        Write-Host 'VERSION file not found. Creating with 0.0.1' -ForegroundColor Yellow
+        Set-Content -Path $versionFile -Value '0.0.1' -Encoding utf8 -NoNewline
+    }
+}
+
+$currentVersion = (Get-Content -Path $versionFile -Raw).Trim()
+if ($currentVersion -notmatch '^(\d+)\.(\d+)\.(\d+)$') {
+    throw "Invalid VERSION format '$currentVersion'. Expected major.minor.patch"
+}
+
+$major = [int]$Matches[1]
+$minor = [int]$Matches[2]
+$patch = [int]$Matches[3]
+
 Write-Host "Current version: $currentVersion" -ForegroundColor Yellow
 
-# --- Parse version ---
-$parts = $currentVersion.Split(".")
-$major = [int]$parts[0]
-$minor = [int]$parts[1]
-$patch = [int]$parts[2]
-
-# --- Increment patch with cascading rollover ---
 $patch++
 if ($patch -gt 9) {
     $patch = 0
@@ -88,108 +205,32 @@ if ($patch -gt 9) {
 $newVersion = "$major.$minor.$patch"
 Write-Host "New version: $newVersion" -ForegroundColor Green
 
-# --- Write new version to VERSION file ---
 if ($DryRun) {
     Write-DryRun "Would update VERSION to $newVersion"
-} else {
-    $newVersion | Out-File $versionFile -Encoding utf8
-}
-
-# --- Update package.json version field ---
-Write-Host "Updating package.json version..." -ForegroundColor DarkCyan
-$packageJson = Get-Content package.json -Raw | ConvertFrom-Json
-$packageJson.version = $newVersion
-
-if ($DryRun) {
-    Write-DryRun "Would update package.json version to $newVersion"
-} else {
-    $packageJson | ConvertTo-Json -Depth 20 | Out-File package.json -Encoding utf8
-}
-
-# --- Update CHANGELOG.md ---
-$changelog = "CHANGELOG.md"
-if (-not (Test-Path $changelog)) {
-    if ($DryRun) {
-        Write-DryRun "Would create CHANGELOG.md with initial version block"
-    } else {
-        Write-Host "CHANGELOG.md not found. Creating a new one." -ForegroundColor Yellow
-        @(
-            "# Changelog"
-            ""
-            "## [$newVersion] - Unreleased"
-            ""
-        ) | Out-File $changelog -Encoding utf8
-    }
 }
 else {
-    Write-Host "Updating CHANGELOG.md..." -ForegroundColor DarkCyan
-
-    $content = Get-Content $changelog -Raw
-
-    $updated = $content -replace "(## 
-
-\[.*?\]
-
-)", "## [$newVersion] - Unreleased`r`n`r`n`$1"
-
-    if ($DryRun) {
-        Write-DryRun "Would insert new version block into CHANGELOG.md"
-    } else {
-        $updated | Out-File $changelog -Encoding utf8
-    }
+    Set-Content -Path $versionFile -Value $newVersion -Encoding utf8 -NoNewline
 }
 
-# --- Git status ---
-Write-Host "`n--- Git Status ---" -ForegroundColor DarkCyan
-git status
+Write-Host 'Updating package.json version...' -ForegroundColor DarkCyan
+Update-PackageVersion -Path $packageJsonPath -Version $newVersion -DryRun:$DryRun
 
-# --- Build ---
-Write-Host "`n--- Build (npm run compile) ---" -ForegroundColor DarkCyan
-npm run compile
-if ($LASTEXITCODE -ne 0) { Write-Host "Build failed." -ForegroundColor Red; exit 1 }
+Write-Host 'Updating CHANGELOG.md...' -ForegroundColor DarkCyan
+Update-Changelog -Path $changelogPath -Version $newVersion -DryRun:$DryRun
 
-# --- Lint ---
-Write-Host "`n--- Lint (npm run lint) ---" -ForegroundColor DarkCyan
-npm run lint
-if ($LASTEXITCODE -ne 0) { Write-Host "Lint failed." -ForegroundColor Red; exit 1 }
+# Validate the exact to-be-committed state.
+Invoke-CheckedCommand -Title 'Verify (npm run verify)' -Action { npm run verify }
 
-# --- Test ---
-Write-Host "`n--- Test (npm test) ---" -ForegroundColor DarkCyan
-npm test
-if ($LASTEXITCODE -ne 0) { Write-Host "Tests failed." -ForegroundColor Red; exit 1 }
-
-# --- Git add ---
 if ($DryRun) {
-    Write-DryRun "Would run: git add -A"
-} else {
-    Write-Host "`n--- Git Add ---" -ForegroundColor DarkCyan
-    git add -A
-}
-
-# --- Git commit ---
-if ($DryRun) {
-    Write-DryRun "Would commit with message: $Message (v$newVersion)"
-} else {
-    Write-Host "`n--- Git Commit ---" -ForegroundColor DarkCyan
-    git commit -m "$Message (v$newVersion)"
-}
-
-# --- Git pull (rebase) ---
-if ($DryRun) {
-    Write-DryRun "Would run: git pull --rebase"
-} else {
-    Write-Host "`n--- Git Pull (rebase) ---" -ForegroundColor DarkCyan
-    git pull --rebase
-}
-
-# --- Git push ---
-if ($DryRun) {
-    Write-DryRun "Would run: git push"
+    Write-DryRun 'Would run: git add -A'
+    Write-DryRun "Would run: git commit -m `"$Message (v$newVersion)`""
+    Write-DryRun 'Would run: git push'
     Write-Host "`n=== DRY RUN COMPLETE (v$newVersion) — No changes written ===" -ForegroundColor Yellow
     exit 0
-} else {
-    Write-Host "`n--- Git Push ---" -ForegroundColor DarkCyan
-    git push
 }
+
+Invoke-CheckedCommand -Title 'Git Add' -Action { git add -A }
+Invoke-CheckedCommand -Title 'Git Commit' -Action { git commit -m "$Message (v$newVersion)" }
+Invoke-CheckedCommand -Title 'Git Push' -Action { git push }
 
 Write-Host "`n=== Check-in Complete (v$newVersion) ===" -ForegroundColor Green

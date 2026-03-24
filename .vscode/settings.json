@@ -22,9 +22,6 @@
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
 
-  // Explicitly prevent Prettier from touching TS/JS
-  "prettier.disableLanguages": ["javascript", "typescript"],
-
   // Keep Prettier for JSON/Markdown (no conflicts here)
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

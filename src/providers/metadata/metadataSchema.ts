@@ -1,6 +1,16 @@
-// ---------------------------------------------------------------------------
-// Parameter metadata
-// ---------------------------------------------------------------------------
+// src/providers/metadata/metadataSchema.ts
+
+export interface CosmosFunctionSnippetVariant {
+  prefix: string
+  description?: string
+  body: string[]
+}
+
+export interface CosmosFunctionSnippet {
+  js: CosmosFunctionSnippetVariant
+  ts: CosmosFunctionSnippetVariant
+}
+
 export interface ApiParameter {
   name: string
   type: string
@@ -8,52 +18,34 @@ export interface ApiParameter {
   documentation?: string
 }
 
-// ---------------------------------------------------------------------------
-// Signature metadata
-// ---------------------------------------------------------------------------
 export interface ApiSignature {
   label: string
   parameters: ApiParameter[]
-  returns: string
+  returns?: string
   documentation?: string
 }
 
-// ---------------------------------------------------------------------------
-// Snippet metadata (NEW)
-// ---------------------------------------------------------------------------
-export interface CosmosFunctionSnippet {
-  prefix: string
-  body: string[]
-  description?: string
-}
-
-// ---------------------------------------------------------------------------
-// Function metadata
-// ---------------------------------------------------------------------------
 export interface ApiFunction {
   label: string
-  detail: string
+  detail?: string
   documentation?: string
   signatures: ApiSignature[]
+  notes?: string[]
+  tips?: string[]
+  warnings?: string[]
+  performance?: string[]
+  antiPatterns?: string[]
   examples?: string[]
   related?: string[]
-  notes?: string[]
-
-  // NEW
+  links?: { title: string; url: string }[]
   snippet?: CosmosFunctionSnippet
 }
 
-// ---------------------------------------------------------------------------
-// Group metadata
-// ---------------------------------------------------------------------------
 export interface ApiGroup {
   label: string
   functions: ApiFunction[]
 }
 
-// ---------------------------------------------------------------------------
-// Root metadata object
-// ---------------------------------------------------------------------------
 export interface CosmosApi {
   context: ApiGroup
   collection: ApiGroup

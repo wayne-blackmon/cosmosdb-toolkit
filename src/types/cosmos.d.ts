@@ -31,6 +31,37 @@ declare interface ICollection {
     ) => void
   ): boolean
 
+  readDocument(
+    link: string,
+    options?: IRequestOptions,
+    callback?: (
+      err: IError,
+      resource: any,
+      info: IFeedCallbackInfo
+    ) => void
+  ): boolean
+
+  replaceDocument(
+    link: string,
+    body: any,
+    options?: IRequestOptions,
+    callback?: (
+      err: IError,
+      resource: any,
+      info: IFeedCallbackInfo
+    ) => void
+  ): boolean
+
+  deleteDocument(
+    link: string,
+    options?: IRequestOptions,
+    callback?: (
+      err: IError,
+      resource: any,
+      info: IFeedCallbackInfo
+    ) => void
+  ): boolean
+
   upsertDocument(
     link: string,
     body: any,

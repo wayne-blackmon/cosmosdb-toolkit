@@ -1,8 +1,10 @@
+// src/test/providers/CosmosHoverProvider.test.ts
+
 import * as assert from 'assert'
 import * as vscode from 'vscode'
 import { cosmosApi } from '../../providers/metadata/cosmosApi'
 
-suite('CosmosHoverProvider', () => {
+suite('CosmosHoverProvider (compact)', () => {
   test('Hover appears for known API functions', async () => {
     const doc = await vscode.workspace.openTextDocument({
       language: 'javascript',
@@ -16,7 +18,6 @@ suite('CosmosHoverProvider', () => {
 
     const editor = await vscode.window.showTextDocument(doc)
 
-    // Place cursor on getCollection
     const position = new vscode.Position(3, 25)
     editor.selection = new vscode.Selection(position, position)
 
@@ -26,61 +27,65 @@ suite('CosmosHoverProvider', () => {
       position
     )
 
-    assert.ok(hovers, 'Expected hover results')
-    assert.ok(hovers.length > 0, 'Expected at least one hover result')
+    assert.ok(hovers && hovers.length > 0)
 
-    const apiEntry = cosmosApi.context.functions.find(f => f.label === 'getCollection')
-    assert.ok(apiEntry, 'Metadata entry for getCollection should exist')
+    const apiEntry = cosmosApi.context.functions.find(
+      f => f.label === 'getCollection'
+    )
+    assert.ok(apiEntry)
 
-    // VS Code may return built-in JS hover info alongside our extension hover.
-    // Filter for the hover entry coming from our Cosmos provider by matching the expected label.
-    const cosmosHover = hovers.find((h) => {
+    const cosmosHover = hovers.find(h => {
       const text = h.contents
-        .map(c => {
-          if (typeof c === 'string') return c
-          if (c instanceof vscode.MarkdownString) return c.value
-          if ('value' in c) return c.value
-          return ''
-        })
+        .map(c => (c instanceof vscode.MarkdownString ? c.value : String(c)))
         .join('\n')
       return text.includes(apiEntry.label)
     })
 
-    assert.ok(cosmosHover, 'Expected Cosmos hover result')
+    assert.ok(cosmosHover)
 
-    const hoverText = cosmosHover!.contents
-      .map(c => {
-        if (typeof c === 'string') return c
-        if (c instanceof vscode.MarkdownString) return c.value
-        if ('value' in c) return c.value
-        return ''
-      })
+    const hoverText = cosmosHover.contents
+      .map(c => (c instanceof vscode.MarkdownString ? c.value : String(c)))
       .join('\n')
 
-    assert.ok(
-      hoverText.includes(apiEntry.label),
-      'Hover should include function label'
-    )
-
-    assert.ok(apiEntry.documentation, 'API entry should have documentation')
-    assert.ok(
-      hoverText.includes(apiEntry.documentation),
-      'Hover should include documentation'
-    )
-
-    const sig = apiEntry.signatures[0]
-    const params = sig.parameters
-      .map(p => `${p.name}${p.optional ? '?' : ''}: ${p.type}`)
-      .join(', ')
-
-    assert.ok(
-      hoverText.includes(`(${params}) => ${sig.returns}`),
-      'Hover should include signature'
-    )
+    assert.ok(hoverText.includes(apiEntry.label))
+    assert.ok(hoverText.includes(apiEntry.documentation!))
+    assert.ok(hoverText.includes('```ts'))
+    assert.ok(hoverText.includes(apiEntry.signatures[0].label))
   })
 
-  test('No hover appears for unknown identifiers', async function () {
-    this.timeout(10000)
+  test('Function hover includes known parameter details', async () => {
+    const doc = await vscode.workspace.openTextDocument({
+      language: 'javascript',
+      content: `
+        function test() {
+          getContext().getCollection().queryDocuments('x', 'y', {}, (err, docs, info) => {})
+        }
+      `
+    })
+
+    const editor = await vscode.window.showTextDocument(doc)
+
+    const position = new vscode.Position(2, 39)
+    editor.selection = new vscode.Selection(position, position)
+
+    const hovers = await vscode.commands.executeCommand<vscode.Hover[]>(
+      'vscode.executeHoverProvider',
+      doc.uri,
+      position
+    )
+
+    const hoverText = hovers
+      .flatMap(h => h.contents)
+      .map(c => (c instanceof vscode.MarkdownString ? c.value : String(c)))
+      .join('\n')
+
+    assert.ok(hoverText.includes('queryDocuments'))
+    assert.ok(hoverText.includes('collectionLink: string'))
+    assert.ok(hoverText.includes('query: string | SqlQuerySpec'))
+    assert.ok(hoverText.includes('callback: (err: IError, docs: RetrievedDocument[], info: IFeedCallbackInfo) => void'))
+  })
+
+  test('No hover appears for unknown identifiers', async () => {
     const doc = await vscode.workspace.openTextDocument({
       language: 'javascript',
       content: `
@@ -95,27 +100,23 @@ suite('CosmosHoverProvider', () => {
     const position = new vscode.Position(2, 25)
     editor.selection = new vscode.Selection(position, position)
 
-    const hovers = (await vscode.commands.executeCommand<vscode.Hover[]>(
-      'vscode.executeHoverProvider',
-      doc.uri,
-      position
-    )) || []
+    const hovers =
+      (await vscode.commands.executeCommand<vscode.Hover[]>(
+        'vscode.executeHoverProvider',
+        doc.uri,
+        position
+      )) || []
 
-    assert.ok(Array.isArray(hovers), 'Expected hover results array')
-
-    const cosmosHover = hovers.find((h) => {
+    const cosmosHover = hovers.find(h => {
       const text = h.contents
-        .map(c => {
-          if (typeof c === 'string') return c
-          if (c instanceof vscode.MarkdownString) return c.value
-          if ('value' in c) return c.value
-          return ''
-        })
+        .map(c => (c instanceof vscode.MarkdownString ? c.value : String(c)))
         .join('\n')
 
-      return cosmosApi.context.functions.some((f) => text.includes(f.label))
+      return cosmosApi.context.functions.some(f =>
+        text.includes(f.label)
+      )
     })
 
-    assert.strictEqual(cosmosHover, undefined, 'Expected no Cosmos hover for unknown symbol')
+    assert.strictEqual(cosmosHover, undefined)
   })
 })

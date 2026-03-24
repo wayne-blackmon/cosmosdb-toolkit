@@ -1,7 +1,7 @@
 import * as assert from 'assert'
 import ts from 'typescript'
 import path from 'path'
-import { cosmosApi } from '../../providers/metadata/cosmosApi.js'
+import { cosmosApi } from '../../providers/metadata/cosmosApi'
 
 suite('Cosmos Metadata Validation', () => {
   test('Metadata matches Cosmos SDK server-side interfaces', () => {
