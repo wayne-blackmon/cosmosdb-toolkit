@@ -1,4 +1,4 @@
-# ![Cosmos DB Toolkit logo](assets/icon/icon-light.png#gh-light-mode-only) ![Cosmos DB Toolkit logo](assets/icon/icon-dark.png#gh-dark-mode-only) Changelog
+# Changelog
 
 All notable changes to the **cosmosdb-toolkit** extension will be documented in this file.
 
@@ -9,9 +9,19 @@ Versions are automatically incremented via the check‑in script.
 
 ## [Unreleased]
 
-## [0.2.2] - 2026-03-25
+## [0.2.5] - 2026-03-25
 
-### Added
+- Version bump via check-in script.
+
+## [0.2.4] - 2026-03-25
+
+- Version bump via check-in script.
+
+## [0.2.3] - 2026-03-25
+
+- Version bump via check-in script.
+
+## [0.2.2] - 2026-03-25
 
 - Version bump via check-in script.
 
@@ -38,8 +48,6 @@ Versions are automatically incremented via the check‑in script.
   - Removed obsolete `.eslintrc.json` (superseded by `eslint.config.mjs`)
 
 ## [0.1.9] - 2026-03-25
-
-### Added (0.1.9)
 
 - Version bump via check-in script.
 
@@ -129,3 +137,5 @@ Versions are automatically incremented via the check‑in script.
   - Completion Provider (context, collection, request, response)
   - Signature Help Provider with overload + parameter documentation
 - Versioning pipeline using `VERSION` + automated CHANGELOG insertion
+
+

@@ -1,4 +1,4 @@
-# ![Cosmos DB Toolkit logo](assets/icon/icon-readme-64-aligned.png) Cosmos DB Toolkit for VS Code
+# Cosmos DB Toolkit for VS Code
 
 A lightweight, metadata‑driven IntelliSense extension for Azure Cosmos DB server‑side JavaScript  
 (stored procedures, triggers, and UDFs).

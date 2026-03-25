@@ -28,7 +28,8 @@ param(
     [Parameter(Mandatory = $false)]
     [string]$Message = "checkpoint",
 
-    [switch]$DryRun
+    [switch]$DryRun,
+    [switch]$SkipVerify
 )
 
 Set-StrictMode -Version Latest
@@ -63,7 +64,7 @@ function Update-Changelog {
 
     $today = Get-Date -Format 'yyyy-MM-dd'
     $releaseHeader = "## [$Version] - $today"
-    $fallbackBody = "### Added`r`n- Version bump via check-in script."
+    $fallbackBody = "- Version bump via check-in script."
 
     if (-not (Test-Path $Path)) {
         $initial = @"
@@ -75,7 +76,6 @@ All notable changes to the **cosmosdb-toolkit** extension will be documented in 
 
 ## [$Version] - $today
 
-### Added
 - Version bump via check-in script.
 
 "@
@@ -229,7 +229,13 @@ Write-Host 'Updating CHANGELOG.md...' -ForegroundColor DarkCyan
 Update-Changelog -Path $changelogPath -Version $newVersion -DryRun:$DryRun
 
 # Validate the exact to-be-committed state.
-Invoke-CheckedCommand -Title 'Verify (npm run verify)' -Action { npm run verify }
+if ($SkipVerify) {
+    Write-Host "`n--- Verify (npm run verify) ---" -ForegroundColor DarkCyan
+    Write-Host "Skipped via -SkipVerify." -ForegroundColor Yellow
+}
+else {
+    Invoke-CheckedCommand -Title 'Verify (npm run verify)' -Action { npm run verify }
+}
 
 if ($DryRun) {
     Write-DryRun 'Would run: git add -A'
