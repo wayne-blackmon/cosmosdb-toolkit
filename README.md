@@ -1,7 +1,15 @@
-# ![Cosmos DB Toolkit logo](assets/icon/icon-light.png#gh-light-mode-only) ![Cosmos DB Toolkit logo](assets/icon/icon-dark.png#gh-dark-mode-only) Cosmos DB Toolkit for VS Code
+# ![Cosmos DB Toolkit logo](assets/icon/icon-readme-64-aligned.png) Cosmos DB Toolkit for VS Code
 
 A lightweight, metadata‑driven IntelliSense extension for Azure Cosmos DB server‑side JavaScript  
 (stored procedures, triggers, and UDFs).
+
+Repository: [github.com/wayne-blackmon/cosmosdb-toolkit](https://github.com/wayne-blackmon/cosmosdb-toolkit)
+
+## Support
+
+If this extension helps your workflow, you can support development here:
+
+[![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-0070BA?logo=paypal&logoColor=white)](https://www.paypal.com/donate/?hosted_button_id=PN9F8GZ75NUAW)
 
 This toolkit provides:
 

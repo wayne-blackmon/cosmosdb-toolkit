@@ -35,7 +35,7 @@ Versions are automatically incremented via the check‑in script.
 
 ## [0.1.9] - 2026-03-25
 
-### Added
+### Added (0.1.9)
 
 - Version bump via check-in script.
 
