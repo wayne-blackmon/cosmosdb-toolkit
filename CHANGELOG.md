@@ -9,26 +9,28 @@ Versions are automatically incremented via the check‑in script.
 
 ## [Unreleased]
 
+## [0.1.9] - 2026-03-25
+
+### Added
+- Version bump via check-in script.
+
 ## [0.1.8] - 2026-03-25
 
 ### Added
+
 - Version bump via check-in script.
 
 ## [0.1.7] - 2026-03-25
 
-### Added
 - Version bump via check-in script.
 
 ## [0.1.6] - 2026-03-25
-
-### Added
 
 - Version bump via check-in script.
 
 ## [0.1.5] - 2026-03-25
 
 - Version bump via check-in script.
-
 - **Diagnostics Provider** — new inline diagnostic rules with actionable messages and machine-readable codes:
   - `cosmosdb.missingContext`: hints when `getContext()` is absent, with a remediation suggestion
   - `cosmosdb.unknownEntryPoint`: warns on unrecognised `getXxx()` calls and lists valid alternatives
@@ -67,7 +69,6 @@ Versions are automatically incremented via the check‑in script.
 ## [0.1.2] - 2026-03-24
 
 - Version bump via check-in script.
-
 - Fully typed Cosmos Hover Provider with metadata‑driven documentation and signatures
 - Hover provider registration for both file‑backed and untitled documents
 - Deterministic hover extraction utility for test suite
@@ -93,13 +94,12 @@ Versions are automatically incremented via the check‑in script.
 
 - Initial release of the Cosmos DB Toolkit extension
 - Scratchpad auto‑open in Development Mode
-- Command palette integration (\`cosmosdb-toolkit.openScratchpad\`)
+- Command palette integration (`cosmosdb-toolkit.openScratchpad`)
 - Deterministic activation model (Dev / Prod / Test)
 - Cross‑platform test suite stabilization
 - Advanced VS Code testing setup (Mocha bootstrap, suite/index, deterministic ordering)
 - Metadata‑driven IntelliSense for Cosmos DB server‑side API
   - Completion Provider (context, collection, request, response)
   - Signature Help Provider with overload + parameter documentation
-- Versioning pipeline using \`VERSION\` + automated CHANGELOG insertion
-
+- Versioning pipeline using `VERSION` + automated CHANGELOG insertion
 
