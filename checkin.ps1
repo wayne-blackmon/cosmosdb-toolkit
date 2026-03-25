@@ -64,13 +64,7 @@ function Update-Changelog {
 
     $today = Get-Date -Format 'yyyy-MM-dd'
     $releaseHeader = "## [$Version] - $today"
-    $releaseBlock = @"
-$releaseHeader
-
-### Added
-- Version bump via check-in script.
-
-"@
+    $fallbackBody = "### Added`r`n- Version bump via check-in script."
 
     if (-not (Test-Path $Path)) {
         $initial = @"
@@ -80,7 +74,11 @@ All notable changes to the **cosmosdb-toolkit** extension will be documented in 
 
 ## [Unreleased]
 
-$releaseBlock
+## [$Version] - $today
+
+### Added
+- Version bump via check-in script.
+
 "@
 
         if ($DryRun) {
@@ -99,12 +97,25 @@ $releaseBlock
         return
     }
 
-    if ($content -match '(?m)^## \[Unreleased\]\s*$') {
+    # Extract anything written under [Unreleased] so we can move it into the new release block.
+    # Capture: everything between ## [Unreleased] and the next ## heading (or end of file).
+    $unreleasedBody = ''
+    if ($content -match '(?ms)^## \[Unreleased\][^\S\r\n]*\r?\n(.*?)(?=^## |\Z)') {
+        $unreleasedBody = $Matches[1].Trim()
+    }
+
+    # Use harvested content if non-trivial, otherwise fall back to generic note.
+    $releaseBody = if ($unreleasedBody -ne '') { $unreleasedBody } else { $fallbackBody }
+    $releaseBlock = "$releaseHeader`r`n`r`n$releaseBody`r`n"
+
+    if ($content -match '(?m)^## \[Unreleased\]') {
+        # Replace the entire [Unreleased] section (header + body) with an empty header
+        # followed by the new versioned release block.
         $updated = [regex]::Replace(
             $content,
-            '(?m)^## \[Unreleased\]\s*$',
-            "## [Unreleased]`r`n`r`n$releaseBlock",
-            1
+            '(?ms)^## \[Unreleased\][^\S\r\n]*\r?\n.*?(?=^## |\Z)',
+            "## [Unreleased]`r`n`r`n$releaseBlock`r`n",
+            [System.Text.RegularExpressions.RegexOptions]::Multiline
         )
     }
     else {
