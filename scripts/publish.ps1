@@ -21,7 +21,9 @@ param(
     [switch]$SkipVerify,
     [switch]$AllowDirty,
     [switch]$PromptForPat,
-    [string]$VsixPath
+    [string]$VsixPath,
+    [int]$NetworkRetryCount = 3,
+    [int]$NetworkRetryDelaySeconds = 3
 )
 
 Set-StrictMode -Version Latest
@@ -45,6 +47,67 @@ function Invoke-CheckedCommand {
     & $Action
     if ($LASTEXITCODE -ne 0) {
         throw "$Title failed with exit code $LASTEXITCODE."
+    }
+}
+
+function Test-IsTransientNetworkError {
+    param([string]$Text)
+
+    if ([string]::IsNullOrWhiteSpace($Text)) {
+        return $false
+    }
+
+    # Retry only for transient transport failures that often succeed on a later attempt.
+    return ($Text -match '(?i)ECONNRESET|ETIMEDOUT|EAI_AGAIN|ECONNREFUSED|socket hang up|TLS handshake timeout|connection.*reset')
+}
+
+function Invoke-VsceCommandWithRetry {
+    param(
+        [Parameter(Mandatory = $true)][string]$Title,
+        [Parameter(Mandatory = $true)][scriptblock]$Action,
+        [int]$MaxAttempts = 3,
+        [int]$InitialDelaySeconds = 3,
+        [switch]$CaptureOutput
+    )
+
+    $attempt = 1
+    $delaySeconds = [Math]::Max(1, $InitialDelaySeconds)
+    $attemptLimit = [Math]::Max(1, $MaxAttempts)
+
+    while ($true) {
+        if ($attempt -eq 1) {
+            Write-Host "`n--- $Title ---" -ForegroundColor DarkCyan
+        }
+        else {
+            Write-Host "`n--- $Title (attempt $attempt/$attemptLimit) ---" -ForegroundColor DarkCyan
+        }
+
+        $output = @(& $Action 2>&1)
+        $exitCode = $LASTEXITCODE
+
+        foreach ($line in $output) {
+            Write-Host $line
+        }
+
+        if ($exitCode -eq 0) {
+            if ($CaptureOutput) {
+                return $output
+            }
+
+            return
+        }
+
+        $combinedText = ($output | Out-String)
+        $isRetryable = Test-IsTransientNetworkError -Text $combinedText
+        if (($attempt -lt $attemptLimit) -and $isRetryable) {
+            Write-Host ("Transient network error detected. Retrying in {0}s..." -f $delaySeconds) -ForegroundColor Yellow
+            Start-Sleep -Seconds $delaySeconds
+            $attempt += 1
+            $delaySeconds = [Math]::Min($delaySeconds * 2, 30)
+            continue
+        }
+
+        throw "$Title failed with exit code $exitCode."
     }
 }
 
@@ -166,7 +229,9 @@ function Test-VsceAuthentication {
         return
     }
 
-    $publishers = @(vsce ls-publishers 2>$null)
+    $publishers = @(
+        Invoke-VsceCommandWithRetry -Title 'VSCE Publisher Probe' -Action { vsce ls-publishers } -CaptureOutput -MaxAttempts $NetworkRetryCount -InitialDelaySeconds $NetworkRetryDelaySeconds
+    )
     if ($LASTEXITCODE -ne 0) {
         switch ($AuthMode) {
             'pat-env' { throw "VSCE_PAT is set, but authentication failed. Ensure the token is valid for publisher '$Publisher'." }
@@ -272,7 +337,7 @@ try {
         Write-Host 'Dry run complete. No publish was performed.' -ForegroundColor Yellow
     }
     else {
-        Invoke-CheckedCommand -Title 'VSCE Publish' -Action { vsce publish }
+        Invoke-VsceCommandWithRetry -Title 'VSCE Publish' -Action { vsce publish } -MaxAttempts $NetworkRetryCount -InitialDelaySeconds $NetworkRetryDelaySeconds
         Write-Host 'Publish complete.' -ForegroundColor Green
     }
 }
