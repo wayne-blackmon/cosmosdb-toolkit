@@ -9,14 +9,18 @@ Versions are automatically incremented via the check‑in script.
 
 ## [Unreleased]
 
-## [0.1.6] - 2026-03-25
+## [0.1.7] - 2026-03-25
 
 ### Added
 - Version bump via check-in script.
 
-## [0.1.5] - 2026-03-25
+## [0.1.6] - 2026-03-25
 
 ### Added
+
+- Version bump via check-in script.
+
+## [0.1.5] - 2026-03-25
 
 - Version bump via check-in script.
 
