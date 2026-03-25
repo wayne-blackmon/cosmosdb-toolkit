@@ -9,12 +9,16 @@ Versions are automatically incremented via the check‑in script.
 
 ## [Unreleased]
 
-## [0.1.5] - 2026-03-25
+## [0.1.6] - 2026-03-25
 
 ### Added
 - Version bump via check-in script.
 
+## [0.1.5] - 2026-03-25
+
 ### Added
+
+- Version bump via check-in script.
 
 - **Diagnostics Provider** — new inline diagnostic rules with actionable messages and machine-readable codes:
   - `cosmosdb.missingContext`: hints when `getContext()` is absent, with a remediation suggestion
@@ -45,17 +49,13 @@ Versions are automatically incremented via the check‑in script.
 
 ## [0.1.4] - 2026-03-24
 
-### Added
-
 - Version bump via check-in script.
 
 ## [0.1.3] - 2026-03-24
 
-
 - Version bump via check-in script.
 
 ## [0.1.2] - 2026-03-24
-
 
 - Version bump via check-in script.
 
