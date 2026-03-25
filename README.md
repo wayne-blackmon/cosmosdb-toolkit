@@ -6,8 +6,9 @@ A lightweight, metadata‑driven IntelliSense extension for Azure Cosmos DB serv
 This toolkit provides:
 
 - ✔ Completion suggestions for all Cosmos DB server‑side APIs
-- ✔ Signature help with parameter documentation
-- ✔ Hover tooltips powered by structured metadata
+- ✔ Signature help with per-parameter documentation
+- ✔ Hover tooltips powered by structured metadata, with receiver-aware disambiguation
+- ✔ Diagnostics with actionable messages, diagnostic codes, and suggestions for unknown APIs
 - ✔ Built‑in JavaScript and TypeScript scratchpads for rapid iteration
 - ✔ A clean, deterministic test suite
 
@@ -75,14 +76,29 @@ Shows rich documentation and signatures when hovering over:
 - \`setStatusCode\`
 - …and all other Cosmos DB server‑side APIs
 
-The hover provider is fully metadata‑driven and works in both file‑backed and untitled documents.
+The hover provider is fully metadata‑driven and works in both file‑backed and untitled documents. It disambiguates functions that appear on multiple interfaces (for example `request.setBody` vs `response.setBody`) by inspecting the receiver in the line prefix.
+
+### 🔹 Diagnostics Provider
+
+Provides inline diagnostics as you type, covering three rules:
+
+| Rule                   | Severity | Description                                                                           |
+| ---------------------- | -------- | ------------------------------------------------------------------------------------- |
+| Missing `getContext()` | Hint     | Flags files that never call `getContext()`, with an actionable suggestion             |
+| Unknown entry point    | Warning  | Flags calls like `getBanana()` that don't match a known Cosmos DB context entry point |
+| Unknown function       | Warning  | Flags unrecognised function names and suggests the closest known alternatives         |
+
+All diagnostics carry a machine-readable `code` (`cosmosdb.missingContext`, `cosmosdb.unknownEntryPoint`, `cosmosdb.unknownFunction`) for tooling and quick-fix integration.
 
 ### 🔹 Scratchpad Command
 
 Quickly open both JavaScript and TypeScript scratchpads for writing stored procedures:
 
+- Command category: **Cosmos DB**
 - Command title: **Cosmos DB: Open Scratchpad**
-- Command ID: \`cosmosdb-toolkit.openScratchpad\`
+- Command ID: `cosmosdb-toolkit.openScratchpad`
+
+The command provides a status bar confirmation on success and a user-visible error message on failure.
 
 ### 🔹 Test Suite
 
@@ -94,8 +110,10 @@ Includes:
 
 - Completion provider tests
 - Signature help provider tests
-- Hover provider tests
+- Hover provider tests (including receiver-disambiguation regression)
+- Diagnostics provider tests
 - Metadata drift validation (ensures metadata matches the Cosmos SDK)
+- Snippet validation (ensures all API functions have JS + TS snippet variants)
 - Scratchpad tests
 - Extension activation tests
 
@@ -144,37 +162,40 @@ This project uses a deterministic, test‑gated workflow:
 
 Folder structure:
 
-\`\`\`
-src
-│ extension.ts
-│
-├── providers
-│ ├── CosmosCompletionProvider.ts
-│ ├── CosmosHoverProvider.ts
-│ ├── CosmosSignatureProvider.ts
-│ └── metadata
-│ ├── cosmosApi.core.ts
-│ ├── cosmosApi.snippets.ts
-│ ├── cosmosApi.ts
-│ └── metadataSchema.ts
-│
-├── snippets
-│ └── sprocs.ts
-│
-└── test
-├── runTest.ts
-└── suite
-├── completionProvider.test.ts
-├── extension.test.ts
-├── hoverProvider.test.ts
-├── index.ts
-├── scratchpad.test.ts
-├── signaturePovider.test.ts
-├── scratchpadCompletions.test.ts
-├── scratchpadSignatures.test.ts
-├── snippetValidator.test.ts
-└── tabExpansion.test.ts
-\`\`\`
+```text
+src/
+  extension.ts
+
+  providers/
+    CosmosCompletionProvider.ts
+    CosmosDiagnosticsProvider.ts
+    CosmosHoverProvider.ts
+    CosmosSignatureProvider.ts
+    metadata/
+      cosmosApi.core.ts
+      cosmosApi.snippets.ts
+      cosmosApi.ts
+      metadataSchema.ts
+
+  snippets/
+    sprocs.ts
+
+  test/
+    runTest.ts
+    suite/
+      completionProvider.test.ts
+      diagnosticProvider.test.ts
+      extension.test.ts
+      hoverProvider.test.ts
+      index.ts
+      metadataValidator.test.ts
+      scratchpad.test.ts
+      scratchpadCompletions.test.ts
+      scratchpadSignatures.test.ts
+      signaturePovider.test.ts
+      snippetValidator.test.ts
+      tabExpansion.test.ts
+```
 
 ---
 

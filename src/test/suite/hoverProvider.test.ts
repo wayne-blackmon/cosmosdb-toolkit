@@ -119,4 +119,69 @@ suite('CosmosHoverProvider (compact)', () => {
 
     assert.strictEqual(cosmosHover, undefined)
   })
+
+  test('Disambiguates hover docs for request.setBody and response.setBody', async () => {
+    const content = [
+      'function test() {',
+      '  const context = getContext()',
+      '  const request = context.getRequest()',
+      '  const response = context.getResponse()',
+      '  request.setBody({ from: "request" })',
+      '  response.setBody({ from: "response" })',
+      '}',
+    ].join('\n')
+
+    const doc = await vscode.workspace.openTextDocument({
+      language: 'javascript',
+      content,
+    })
+
+    const editor = await vscode.window.showTextDocument(doc)
+
+    const requestOffset = content.indexOf('request.setBody') + 'request.'.length
+    const requestPosition = doc.positionAt(requestOffset)
+    editor.selection = new vscode.Selection(requestPosition, requestPosition)
+
+    const requestHovers =
+      (await vscode.commands.executeCommand<vscode.Hover[]>(
+        'vscode.executeHoverProvider',
+        doc.uri,
+        requestPosition,
+      )) || []
+
+    const requestHoverText = requestHovers
+      .flatMap((h) => h.contents)
+      .map((c) => (c instanceof vscode.MarkdownString ? c.value : String(c)))
+      .join('\n')
+
+    assert.ok(
+      requestHoverText.includes('Sets the body of the incoming request.'),
+      'Expected request.setBody hover to use IRequest documentation',
+    )
+
+    const responseOffset = content.indexOf('response.setBody') + 'response.'.length
+    const responsePosition = doc.positionAt(responseOffset)
+    editor.selection = new vscode.Selection(responsePosition, responsePosition)
+
+    const responseHovers =
+      (await vscode.commands.executeCommand<vscode.Hover[]>(
+        'vscode.executeHoverProvider',
+        doc.uri,
+        responsePosition,
+      )) || []
+
+    const responseHoverText = responseHovers
+      .flatMap((h) => h.contents)
+      .map((c) => (c instanceof vscode.MarkdownString ? c.value : String(c)))
+      .join('\n')
+
+    assert.ok(
+      responseHoverText.includes('Sets the outgoing response body.'),
+      'Expected response.setBody hover to use IResponse documentation',
+    )
+    assert.ok(
+      !responseHoverText.includes('Sets the body of the incoming request.'),
+      'Expected response.setBody hover not to use IRequest documentation',
+    )
+  })
 })

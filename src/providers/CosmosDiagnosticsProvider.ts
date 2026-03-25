@@ -73,20 +73,25 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
   }
 
   private refreshDiagnostics(document: vscode.TextDocument): void {
-    // ⭐ NEW: Skip diagnostics for scratchpads
+    // Skip diagnostics for scratchpads
     if (document.uri.path.includes('scratchpad')) {
       this.collection.set(document.uri, [])
       return
     }
 
-    const diagnostics: vscode.Diagnostic[] = []
-    const text = document.getText()
+    try {
+      const diagnostics: vscode.Diagnostic[] = []
+      const text = document.getText()
 
-    this.checkMissingContext(document, text, diagnostics)
-    this.checkUnknownEntryPoints(document, text, diagnostics)
-    this.checkUnknownFunctions(document, text, diagnostics)
+      this.checkMissingContext(document, text, diagnostics)
+      this.checkUnknownEntryPoints(document, text, diagnostics)
+      this.checkUnknownFunctions(document, text, diagnostics)
 
-    this.collection.set(document.uri, diagnostics)
+      this.collection.set(document.uri, diagnostics)
+    } catch {
+      // Clear stale diagnostics so the file doesn't show phantom errors
+      this.collection.delete(document.uri)
+    }
   }
 
   // Rule 1: Hint if no getContext() at all
@@ -96,13 +101,15 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
     diagnostics: vscode.Diagnostic[],
   ): void {
     if (!text.includes('getContext(')) {
-      const range = new vscode.Range(0, 0, 0, 0)
+      const firstLineLength = document.lineCount > 0 ? document.lineAt(0).text.length : 1
+      const range = new vscode.Range(0, 0, 0, Math.max(1, firstLineLength))
       const diagnostic = new vscode.Diagnostic(
         range,
-        'Cosmos DB server-side scripts typically start from getContext().',
+        'Cosmos DB server-side scripts typically start from getContext(). Add `const context = getContext()` near the top of the script.',
         vscode.DiagnosticSeverity.Hint,
       )
       diagnostic.source = 'cosmosdb-toolkit'
+      diagnostic.code = 'cosmosdb.missingContext'
       diagnostics.push(diagnostic)
     }
   }
@@ -131,6 +138,7 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
           vscode.DiagnosticSeverity.Warning,
         )
         diagnostic.source = 'cosmosdb-toolkit'
+        diagnostic.code = 'cosmosdb.unknownEntryPoint'
         diagnostics.push(diagnostic)
       }
     }
@@ -152,6 +160,8 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
       }
     }
 
+    const knownFunctionList = Array.from(knownFunctions).sort()
+
     let match: RegExpExecArray | null
     while ((match = functionCallPattern.exec(text)) !== null) {
       const name = match[1]
@@ -168,13 +178,29 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
       if (!knownFunctions.has(name)) {
         const position = document.positionAt(match.index)
         const range = new vscode.Range(position, position.translate(0, name.length))
+        const suggestions = knownFunctionList.filter(
+          (known) =>
+            known.toLowerCase().startsWith(name.toLowerCase().slice(0, 1)) ||
+            known.toLowerCase().includes(name.toLowerCase()),
+        )
+        const suggestionSuffix =
+          suggestions.length > 0
+            ? ` Did you mean: ${suggestions.slice(0, 4).join(', ')}?`
+            : ' Use IntelliSense to browse supported Cosmos DB APIs.'
 
         const diagnostic = new vscode.Diagnostic(
           range,
-          `Unknown Cosmos DB function "${name}".`,
+          `Unknown Cosmos DB function "${name}".${suggestionSuffix}`,
           vscode.DiagnosticSeverity.Warning,
         )
         diagnostic.source = 'cosmosdb-toolkit'
+        diagnostic.code = 'cosmosdb.unknownFunction'
+        diagnostic.relatedInformation = [
+          new vscode.DiagnosticRelatedInformation(
+            new vscode.Location(document.uri, range),
+            `Known Cosmos DB functions: ${knownFunctionList.join(', ')}`,
+          ),
+        ]
         diagnostics.push(diagnostic)
       }
     }

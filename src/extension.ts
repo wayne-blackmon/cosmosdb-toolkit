@@ -9,9 +9,6 @@ import { CosmosHoverProvider } from './providers/CosmosHoverProvider'
 import { CosmosDiagnosticsProvider } from './providers/CosmosDiagnosticsProvider'
 
 export async function activate(context: vscode.ExtensionContext) {
-  console.log('cosmosdb-toolkit activated')
-  console.log('Extension mode:', context.extensionMode)
-
   //
   // DIAGNOSTICS PROVIDER
   //
@@ -59,10 +56,8 @@ export async function activate(context: vscode.ExtensionContext) {
   )
 
   //
-  // SIGNATURE HELP PROVIDER (FIXED)
+  // SIGNATURE HELP PROVIDER
   //
-  console.log('Registering signature provider')
-
   context.subscriptions.push(
     languages.registerSignatureHelpProvider(
       [
@@ -81,14 +76,21 @@ export async function activate(context: vscode.ExtensionContext) {
   //
   context.subscriptions.push(
     vscode.commands.registerCommand('cosmosdb-toolkit.openScratchpad', async () => {
-      const jsPad = vscode.Uri.joinPath(context.extensionUri, 'scratchpad', 'scratchpad.js')
-      const tsPad = vscode.Uri.joinPath(context.extensionUri, 'scratchpad', 'scratchpad.ts')
+      try {
+        const jsPad = vscode.Uri.joinPath(context.extensionUri, 'scratchpad', 'scratchpad.js')
+        const tsPad = vscode.Uri.joinPath(context.extensionUri, 'scratchpad', 'scratchpad.ts')
 
-      const jsDoc = await vscode.workspace.openTextDocument(jsPad)
-      await vscode.window.showTextDocument(jsDoc, { preview: false })
+        const jsDoc = await vscode.workspace.openTextDocument(jsPad)
+        await vscode.window.showTextDocument(jsDoc, { preview: false })
 
-      const tsDoc = await vscode.workspace.openTextDocument(tsPad)
-      await vscode.window.showTextDocument(tsDoc, { preview: false })
+        const tsDoc = await vscode.workspace.openTextDocument(tsPad)
+        await vscode.window.showTextDocument(tsDoc, { preview: false })
+
+        vscode.window.setStatusBarMessage('Cosmos DB Toolkit: opened JavaScript and TypeScript scratchpads.', 3000)
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err)
+        vscode.window.showErrorMessage(`Cosmos DB Toolkit: failed to open scratchpads. ${message}`)
+      }
     }),
   )
 
@@ -107,8 +109,10 @@ export async function activate(context: vscode.ExtensionContext) {
       await vscode.window.showTextDocument(tsDoc, { preview: false })
     } catch (err) {
       console.error('Failed to auto-open scratchpads:', err)
+      const message = err instanceof Error ? err.message : String(err)
+      vscode.window.showErrorMessage(`Cosmos DB Toolkit: failed to auto-open scratchpads. ${message}`)
     }
   }
 }
 
-export function deactivate() {}
+export function deactivate() { }

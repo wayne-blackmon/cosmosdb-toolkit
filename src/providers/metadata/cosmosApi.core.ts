@@ -73,6 +73,38 @@ export const cosmosApiCore: CosmosApi = {
     label: 'ICollection',
     functions: [
       {
+        label: 'getSelfLink',
+        detail: 'Get the self-link for the current collection.',
+        documentation: 'Returns the collection self-link that can be used in collection API calls.',
+        signatures: [
+          {
+            label: 'getSelfLink(): string',
+            parameters: [],
+            returns: 'string',
+          },
+        ],
+        examples: [
+          '// Example: use self-link in a query',
+          'const context = getContext()',
+          'const collection = context.getCollection()',
+          'const link = collection.getSelfLink()',
+        ],
+        related: ['queryDocuments', 'createDocument', 'upsertDocument'],
+        notes: ['Typically passed as the first argument to collection operations.'],
+        snippet: {
+          js: {
+            prefix: 'getSelfLink',
+            description: 'Get the collection self-link.',
+            body: ['const ${1:link} = ${2:collection}.getSelfLink()'],
+          },
+          ts: {
+            prefix: 'getSelfLink',
+            description: 'Get the collection self-link.',
+            body: ['const ${1:link} = ${2:collection}.getSelfLink()'],
+          },
+        },
+      },
+      {
         label: 'queryDocuments',
         detail: 'Query documents in the collection.',
         documentation: 'Executes a SQL query against the collection.',
@@ -81,12 +113,26 @@ export const cosmosApiCore: CosmosApi = {
             label:
               'queryDocuments(collectionLink: string, query: string | SqlQuerySpec, options: FeedOptions, callback: (err: IError, docs: RetrievedDocument[], info: IFeedCallbackInfo) => void): void',
             parameters: [
-              { name: 'collectionLink', type: 'string' },
-              { name: 'query', type: 'string | SqlQuerySpec' },
-              { name: 'options', type: 'FeedOptions', optional: true },
+              {
+                name: 'collectionLink',
+                type: 'string',
+                documentation: 'Self-link of the collection to query, typically from collection.getSelfLink().',
+              },
+              {
+                name: 'query',
+                type: 'string | SqlQuerySpec',
+                documentation: 'SQL text or SqlQuerySpec object describing the query to run.',
+              },
+              {
+                name: 'options',
+                type: 'FeedOptions',
+                optional: true,
+                documentation: 'Optional query settings such as continuation token and page size.',
+              },
               {
                 name: 'callback',
                 type: '(err: IError, docs: RetrievedDocument[], info: IFeedCallbackInfo) => void',
+                documentation: 'Invoked with an error, the result documents, and response metadata.',
               },
             ],
             returns: 'void',
@@ -98,7 +144,7 @@ export const cosmosApiCore: CosmosApi = {
           'const collection = context.getCollection()',
           'collection.queryDocuments(collection.getSelfLink(), \'SELECT * FROM c\', {}, callback)',
         ],
-        related: ['createDocument', 'readDocument'],
+        related: ['getSelfLink', 'createDocument', 'readDocument'],
         notes: ['Supports both SQL text and SqlQuerySpec.'],
       },
 
@@ -111,17 +157,37 @@ export const cosmosApiCore: CosmosApi = {
             label:
               'createDocument(collectionLink: string, body: any, options: RequestOptions, callback: (err: IError, doc: RetrievedDocument) => void): void',
             parameters: [
-              { name: 'collectionLink', type: 'string' },
-              { name: 'body', type: 'any' },
-              { name: 'options', type: 'RequestOptions', optional: true },
+              {
+                name: 'collectionLink',
+                type: 'string',
+                documentation: 'Self-link of the collection where the document will be created.',
+              },
+              {
+                name: 'body',
+                type: 'any',
+                documentation: 'Document object to insert.',
+              },
+              {
+                name: 'options',
+                type: 'RequestOptions',
+                optional: true,
+                documentation: 'Optional write options such as indexing directives.',
+              },
               {
                 name: 'callback',
                 type: '(err: IError, doc: RetrievedDocument) => void',
+                documentation: 'Invoked when the create operation completes.',
               },
             ],
             returns: 'void',
           },
         ],
+        examples: [
+          '// Example: create a document',
+          'collection.createDocument(collection.getSelfLink(), { id: "1" }, {}, callback)',
+        ],
+        related: ['getSelfLink', 'upsertDocument', 'replaceDocument'],
+        notes: ['Throws when the operation is not accepted by the server runtime.'],
       },
 
       {
@@ -133,16 +199,29 @@ export const cosmosApiCore: CosmosApi = {
             label:
               'readDocument(documentLink: string, options: RequestOptions, callback: (err: IError, doc: RetrievedDocument) => void): void',
             parameters: [
-              { name: 'documentLink', type: 'string' },
-              { name: 'options', type: 'RequestOptions', optional: true },
+              {
+                name: 'documentLink',
+                type: 'string',
+                documentation: 'Self-link of the document to read.',
+              },
+              {
+                name: 'options',
+                type: 'RequestOptions',
+                optional: true,
+                documentation: 'Optional read options.',
+              },
               {
                 name: 'callback',
                 type: '(err: IError, doc: RetrievedDocument) => void',
+                documentation: 'Invoked with the retrieved document.',
               },
             ],
             returns: 'void',
           },
         ],
+        examples: ['// Example: collection.readDocument(docLink, {}, callback)'],
+        related: ['queryDocuments', 'replaceDocument', 'deleteDocument'],
+        notes: ['Use when you already have a document self-link.'],
       },
 
       {
@@ -154,17 +233,34 @@ export const cosmosApiCore: CosmosApi = {
             label:
               'replaceDocument(documentLink: string, body: any, options: RequestOptions, callback: (err: IError, doc: RetrievedDocument) => void): void',
             parameters: [
-              { name: 'documentLink', type: 'string' },
-              { name: 'body', type: 'any' },
-              { name: 'options', type: 'RequestOptions', optional: true },
+              {
+                name: 'documentLink',
+                type: 'string',
+                documentation: 'Self-link of the document to replace.',
+              },
+              {
+                name: 'body',
+                type: 'any',
+                documentation: 'Updated document content.',
+              },
+              {
+                name: 'options',
+                type: 'RequestOptions',
+                optional: true,
+                documentation: 'Optional replace options.',
+              },
               {
                 name: 'callback',
                 type: '(err: IError, doc: RetrievedDocument) => void',
+                documentation: 'Invoked with the updated document.',
               },
             ],
             returns: 'void',
           },
         ],
+        examples: ['// Example: collection.replaceDocument(docLink, updatedDoc, {}, callback)'],
+        related: ['readDocument', 'upsertDocument', 'createDocument'],
+        notes: ['Replaces the entire document payload.'],
       },
 
       {
@@ -176,13 +272,29 @@ export const cosmosApiCore: CosmosApi = {
             label:
               'deleteDocument(documentLink: string, options: RequestOptions, callback: (err: IError) => void): void',
             parameters: [
-              { name: 'documentLink', type: 'string' },
-              { name: 'options', type: 'RequestOptions', optional: true },
-              { name: 'callback', type: '(err: IError) => void' },
+              {
+                name: 'documentLink',
+                type: 'string',
+                documentation: 'Self-link of the document to delete.',
+              },
+              {
+                name: 'options',
+                type: 'RequestOptions',
+                optional: true,
+                documentation: 'Optional delete options.',
+              },
+              {
+                name: 'callback',
+                type: '(err: IError) => void',
+                documentation: 'Invoked when deletion completes or fails.',
+              },
             ],
             returns: 'void',
           },
         ],
+        examples: ['// Example: collection.deleteDocument(docLink, {}, callback)'],
+        related: ['readDocument', 'queryDocuments'],
+        notes: ['Deletes exactly one document by self-link.'],
       },
 
       {
@@ -194,17 +306,34 @@ export const cosmosApiCore: CosmosApi = {
             label:
               'upsertDocument(collectionLink: string, body: any, options: RequestOptions, callback: (err: IError, doc: RetrievedDocument) => void): void',
             parameters: [
-              { name: 'collectionLink', type: 'string' },
-              { name: 'body', type: 'any' },
-              { name: 'options', type: 'RequestOptions', optional: true },
+              {
+                name: 'collectionLink',
+                type: 'string',
+                documentation: 'Self-link of the target collection.',
+              },
+              {
+                name: 'body',
+                type: 'any',
+                documentation: 'Document object to create or update.',
+              },
+              {
+                name: 'options',
+                type: 'RequestOptions',
+                optional: true,
+                documentation: 'Optional upsert options.',
+              },
               {
                 name: 'callback',
                 type: '(err: IError, doc: RetrievedDocument) => void',
+                documentation: 'Invoked with the stored document after upsert.',
               },
             ],
             returns: 'void',
           },
         ],
+        examples: ['// Example: collection.upsertDocument(collection.getSelfLink(), doc, {}, callback)'],
+        related: ['getSelfLink', 'createDocument', 'replaceDocument'],
+        notes: ['Creates a new document when it does not exist; otherwise updates it.'],
       },
     ],
   },
@@ -225,7 +354,13 @@ export const cosmosApiCore: CosmosApi = {
         signatures: [
           {
             label: 'setBody(body: any): void',
-            parameters: [{ name: 'body', type: 'any' }],
+            parameters: [
+              {
+                name: 'body',
+                type: 'any',
+                documentation: 'The value to assign as the request body.',
+              },
+            ],
             returns: 'void',
           },
         ],
@@ -249,7 +384,13 @@ export const cosmosApiCore: CosmosApi = {
         signatures: [
           {
             label: 'setValue(value: any): void',
-            parameters: [{ name: 'value', type: 'any' }],
+            parameters: [
+              {
+                name: 'value',
+                type: 'any',
+                documentation: 'The value to assign for the request payload.',
+              },
+            ],
             returns: 'void',
           },
         ],
@@ -267,7 +408,13 @@ export const cosmosApiCore: CosmosApi = {
         signatures: [
           {
             label: 'setStatusCode(code: number): void',
-            parameters: [{ name: 'code', type: 'number' }],
+            parameters: [
+              {
+                name: 'code',
+                type: 'number',
+                documentation: 'HTTP status code to return to the caller.',
+              },
+            ],
             returns: 'void',
           },
         ],
@@ -279,7 +426,13 @@ export const cosmosApiCore: CosmosApi = {
         signatures: [
           {
             label: 'setBody(body: any): void',
-            parameters: [{ name: 'body', type: 'any' }],
+            parameters: [
+              {
+                name: 'body',
+                type: 'any',
+                documentation: 'Value to return as the response body.',
+              },
+            ],
             returns: 'void',
           },
         ],

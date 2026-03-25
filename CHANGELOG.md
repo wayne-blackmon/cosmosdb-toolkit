@@ -9,19 +9,53 @@ Versions are automatically incremented via the check‑in script.
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-03-25
+
+### Added
+- Version bump via check-in script.
+
+### Added
+
+- **Diagnostics Provider** — new inline diagnostic rules with actionable messages and machine-readable codes:
+  - `cosmosdb.missingContext`: hints when `getContext()` is absent, with a remediation suggestion
+  - `cosmosdb.unknownEntryPoint`: warns on unrecognised `getXxx()` calls and lists valid alternatives
+  - `cosmosdb.unknownFunction`: warns on unknown Cosmos API calls and suggests similar known names
+  - `relatedInformation` on unknown-function diagnostics listing all known functions
+- **`getSelfLink` API metadata** — added to `ICollection` group with full documentation, snippet variants, examples, related functions, and notes; eliminates false-positive diagnostics for `collection.getSelfLink()`
+- **Per-parameter documentation** — all `ICollection`, `IRequest`, and `IResponse` signature parameters now carry `documentation` text, populating the signature help parameter detail panel
+- **Collection function metadata** — `related`, `notes`, and `examples` fields added to `createDocument`, `readDocument`, `replaceDocument`, `deleteDocument`, and `upsertDocument`
+- **Snippet completion documentation** — `item.documentation` now set on all snippet completion items so the completion widget detail panel is populated for keyboard and screen reader users
+- **Command category** — `"category": "Cosmos DB"` added to `package.json` for proper Command Palette grouping
+- **Hover disambiguation regression test** — locks fix for `request.setBody` vs `response.setBody` hover collision
+
+### Fixed
+
+- **Hover cache language bug** — cache key now includes `languageId`; JS and TS snippet variants no longer cross-contaminate after the first cache hit
+- **`setBody`/`getBody` hover collision** — hover provider now resolves the correct `IRequest` or `IResponse` variant by inspecting the receiver object in the line prefix (`request.`, `req.`, `response.`, `res.`, etc.)
+- **Zero-length missing-context diagnostic range** — range now spans the first line, producing a visible squiggle navigable via F8 and announced by screen readers
+- **Hover header markup** — `fn.label` is now rendered as a `##` heading rather than plain text, restoring heading semantics for screen readers
+- **Notes rendering** — multiple notes are now rendered as a markdown list instead of a run-on sentence
+- **Related functions** — backtick wrapping removed from `Related:` list to reduce screen reader verbosity
+- **Diagnostics event handler protection** — `refreshDiagnostics` wrapped in try/catch; on error, stale diagnostics are cleared rather than leaving the handler silently broken for the session
+- **Scratchpad command feedback** — command now shows a status bar confirmation on success and a `showErrorMessage` notification on failure; dev-mode auto-open also surfaces errors to the user
+
+### Removed
+
+- Dev-only `console.log` calls from `extension.ts` (`'cosmosdb-toolkit activated'`, `'Extension mode'`, `'Registering signature provider'`)
+
 ## [0.1.4] - 2026-03-24
 
 ### Added
+
 - Version bump via check-in script.
 
 ## [0.1.3] - 2026-03-24
 
-### Added
+
 - Version bump via check-in script.
 
 ## [0.1.2] - 2026-03-24
 
-### Added
 
 - Version bump via check-in script.
 
@@ -58,5 +92,4 @@ Versions are automatically incremented via the check‑in script.
   - Completion Provider (context, collection, request, response)
   - Signature Help Provider with overload + parameter documentation
 - Versioning pipeline using \`VERSION\` + automated CHANGELOG insertion
-
 

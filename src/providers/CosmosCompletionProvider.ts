@@ -52,6 +52,7 @@ export class CosmosCompletionProvider implements vscode.CompletionItemProvider {
           const item = new vscode.CompletionItem(fn.label, vscode.CompletionItemKind.Snippet)
           item.insertText = new vscode.SnippetString(variant.body.join('\n'))
           item.detail = variant.description ?? fn.detail ?? fn.label
+          item.documentation = fn.documentation
           item.preselect = true
           item.sortText = '0000'
           item.filterText = fn.label
@@ -70,6 +71,7 @@ export class CosmosCompletionProvider implements vscode.CompletionItemProvider {
           const item = new vscode.CompletionItem(fn.label, vscode.CompletionItemKind.Snippet)
           item.insertText = new vscode.SnippetString(variant.body.join('\n'))
           item.detail = variant.description ?? fn.detail ?? fn.label
+          item.documentation = fn.documentation
           item.preselect = true
           item.sortText = '0001'
           item.filterText = fn.label
@@ -114,6 +116,7 @@ export class CosmosCompletionProvider implements vscode.CompletionItemProvider {
       const item = new vscode.CompletionItem(snip.prefix, vscode.CompletionItemKind.Snippet)
       item.insertText = new vscode.SnippetString(snip.body.join('\n'))
       item.detail = snip.description
+      item.documentation = new vscode.MarkdownString(snip.description)
       item.preselect = true
       item.sortText = '0000'
       item.filterText = snip.prefix

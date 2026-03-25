@@ -15,7 +15,8 @@ export class CosmosHoverProvider implements vscode.HoverProvider {
     if (!range) return
 
     const word = document.getText(range)
-    const apiFn = this.findFunctionByLabel(word)
+    const linePrefix = document.lineAt(position.line).text.substring(0, range.start.character)
+    const apiFn = this.findFunctionByLabel(word, linePrefix)
     if (!apiFn) return
 
     // Parameter-level hover (TypeScript-style)
@@ -23,7 +24,8 @@ export class CosmosHoverProvider implements vscode.HoverProvider {
     if (paramHover) return new vscode.Hover(paramHover, range)
 
     // Cached full hover
-    const md = this.getCachedHover(apiFn.label, () => this.buildHover(apiFn, document))
+    const cacheKey = `${apiFn.label}:${apiFn.detail ?? ''}:${document.languageId}`
+    const md = this.getCachedHover(cacheKey, () => this.buildHover(apiFn, document))
 
     return new vscode.Hover(md, range)
   }
@@ -35,7 +37,7 @@ export class CosmosHoverProvider implements vscode.HoverProvider {
     return md
   }
 
-  private findFunctionByLabel(label: string): ApiFunction | undefined {
+  private findFunctionByLabel(label: string, linePrefix: string): ApiFunction | undefined {
     const groups: ApiGroup[] = [
       cosmosApi.context,
       cosmosApi.collection,
@@ -43,10 +45,38 @@ export class CosmosHoverProvider implements vscode.HoverProvider {
       cosmosApi.response,
     ]
 
+    const matches: Array<{ group: ApiGroup; fn: ApiFunction }> = []
     for (const group of groups) {
       const fn = group.functions.find((f) => f.label === label)
-      if (fn) return fn
+      if (fn) matches.push({ group, fn })
     }
+
+    if (matches.length === 0) return undefined
+    if (matches.length === 1) return matches[0].fn
+
+    const groupHint = this.resolveGroupHint(linePrefix)
+    if (groupHint) {
+      const match = matches.find((m) => m.group.label === groupHint)
+      if (match) return match.fn
+    }
+
+    return matches[0].fn
+  }
+
+  private resolveGroupHint(linePrefix: string): ApiGroup['label'] | undefined {
+    if (/getRequest\(\)\s*\.\s*$/.test(linePrefix)) return 'IRequest'
+    if (/getResponse\(\)\s*\.\s*$/.test(linePrefix)) return 'IResponse'
+    if (/getCollection\(\)\s*\.\s*$/.test(linePrefix)) return 'ICollection'
+    if (/getContext\(\)\s*\.\s*$/.test(linePrefix)) return 'IContext'
+
+    const receiverMatch = /([A-Za-z_$][\w$]*)\s*\.\s*$/.exec(linePrefix)
+    if (!receiverMatch?.[1]) return undefined
+
+    const receiver = receiverMatch[1].toLowerCase()
+    if (['request', 'req'].includes(receiver)) return 'IRequest'
+    if (['response', 'res'].includes(receiver)) return 'IResponse'
+    if (['collection', 'coll', 'col'].includes(receiver)) return 'ICollection'
+    if (['context', 'ctx'].includes(receiver)) return 'IContext'
 
     return undefined
   }
@@ -79,7 +109,7 @@ export class CosmosHoverProvider implements vscode.HoverProvider {
   }
 
   private renderHeader(md: vscode.MarkdownString, fn: ApiFunction): void {
-    md.appendMarkdown(`${fn.label}\n\n`)
+    md.appendMarkdown(`## ${fn.label}\n\n`)
   }
 
   private renderDescription(md: vscode.MarkdownString, fn: ApiFunction): void {
@@ -108,13 +138,17 @@ export class CosmosHoverProvider implements vscode.HoverProvider {
   private renderNotes(md: vscode.MarkdownString, fn: ApiFunction): void {
     if (!fn.notes?.length) return
 
-    md.appendMarkdown(`Notes: ${fn.notes.join(' ')}\n\n`)
+    md.appendMarkdown('Notes:\n')
+    for (const note of fn.notes) {
+      md.appendMarkdown(`- ${note}\n`)
+    }
+    md.appendMarkdown('\n')
   }
 
   private renderRelated(md: vscode.MarkdownString, fn: ApiFunction): void {
     if (!fn.related?.length) return
 
-    md.appendMarkdown(`Related: ${fn.related.map((r) => `\`${r}\``).join(', ')}\n\n`)
+    md.appendMarkdown(`Related: ${fn.related.join(', ')}\n\n`)
   }
 
   private renderSnippet(
