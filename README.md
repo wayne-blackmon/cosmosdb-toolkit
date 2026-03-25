@@ -1,4 +1,4 @@
-# Cosmos DB Toolkit for VS Code
+# ![Cosmos DB Toolkit logo](assets/icon/icon-light.png#gh-light-mode-only) ![Cosmos DB Toolkit logo](assets/icon/icon-dark.png#gh-dark-mode-only) Cosmos DB Toolkit for VS Code
 
 A lightweight, metadata‑driven IntelliSense extension for Azure Cosmos DB server‑side JavaScript  
 (stored procedures, triggers, and UDFs).
@@ -68,7 +68,7 @@ Displays function signatures and parameter documentation when typing:
 
 ### 🔹 Hover Provider
 
-Shows rich documentation and signatures when hovering over:
+Shows concise, signature-first documentation when hovering over:
 
 - \`getContext\`
 - \`queryDocuments\`
@@ -76,7 +76,7 @@ Shows rich documentation and signatures when hovering over:
 - \`setStatusCode\`
 - …and all other Cosmos DB server‑side APIs
 
-The hover provider is fully metadata‑driven and works in both file‑backed and untitled documents. It disambiguates functions that appear on multiple interfaces (for example `request.setBody` vs `response.setBody`) by inspecting the receiver in the line prefix.
+The hover provider is metadata-driven and works in both file-backed and untitled documents. It disambiguates functions that appear on multiple interfaces (for example `request.setBody` vs `response.setBody`) by inspecting the receiver in the line prefix. Hover content currently includes the primary TypeScript signature and a concise description sourced from metadata.
 
 ### 🔹 Diagnostics Provider
 
@@ -97,8 +97,14 @@ Quickly open both JavaScript and TypeScript scratchpads for writing stored proce
 - Command category: **Cosmos DB**
 - Command title: **Cosmos DB: Open Scratchpad**
 - Command ID: `cosmosdb-toolkit.openScratchpad`
+- Command icon: theme-aware (`assets/icon/icon-light.png` for light themes, `assets/icon/icon-dark.png` for dark themes)
 
 The command provides a status bar confirmation on success and a user-visible error message on failure.
+
+### 🔹 Extension Icon
+
+- Marketplace/Extensions view icon: `assets/icon/icon-dark.png`
+- Command UI icon: theme-aware object in `package.json` using `icon-light.png` and `icon-dark.png`
 
 ### 🔹 Test Suite
 
@@ -163,6 +169,10 @@ This project uses a deterministic, test‑gated workflow:
 Folder structure:
 
 ```text
+scripts/
+  checkin.ps1
+  publish.ps1
+
 src/
   extension.ts
 
@@ -201,5 +211,4 @@ src/
 
 ## Status
 
-This extension is under active development and is approaching its first stable release.  
-All IntelliSense surfaces are now metadata‑driven and fully validated.
+This extension is under active development. All IntelliSense surfaces are metadata‑driven and fully validated, with a deterministic test‑gated release pipeline.

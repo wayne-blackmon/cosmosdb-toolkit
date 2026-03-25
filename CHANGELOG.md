@@ -1,4 +1,4 @@
-# Changelog
+# ![Cosmos DB Toolkit logo](assets/icon/icon-light.png#gh-light-mode-only) ![Cosmos DB Toolkit logo](assets/icon/icon-dark.png#gh-dark-mode-only) Changelog
 
 All notable changes to the **cosmosdb-toolkit** extension will be documented in this file.
 
@@ -9,14 +9,31 @@ Versions are automatically incremented via the check‑in script.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-03-25
+
+### Changed
+
+- Added extension icon assets and manifest wiring:
+  - Top-level extension icon now points to `assets/icon/icon-dark.png`
+  - `cosmosdb-toolkit.openScratchpad` command now uses theme-aware icons:
+    - Light: `assets/icon/icon-light.png`
+    - Dark: `assets/icon/icon-dark.png`
+- Refined hover content rendering for a cleaner, safer default:
+  - Hover markdown is now rendered with `isTrusted = false`
+  - Function hovers now prioritize the primary signature and concise description text
+  - Removed extra hover sections (header, notes, related list, and snippet block) from the default hover surface
+- Repository root cleanup:
+  - `checkin.ps1` and `publish.ps1` moved to `scripts/`
+  - `links.txt` moved to `assets/`
+  - Removed obsolete `.eslintrc.json` (superseded by `eslint.config.mjs`)
+
 ## [0.1.9] - 2026-03-25
 
 ### Added
+
 - Version bump via check-in script.
 
 ## [0.1.8] - 2026-03-25
-
-### Added
 
 - Version bump via check-in script.
 

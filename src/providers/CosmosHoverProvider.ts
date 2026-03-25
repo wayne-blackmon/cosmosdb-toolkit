@@ -25,7 +25,7 @@ export class CosmosHoverProvider implements vscode.HoverProvider {
 
     // Cached full hover
     const cacheKey = `${apiFn.label}:${apiFn.detail ?? ''}:${document.languageId}`
-    const md = this.getCachedHover(cacheKey, () => this.buildHover(apiFn, document))
+    const md = this.getCachedHover(cacheKey, () => this.buildHover(apiFn))
 
     return new vscode.Hover(md, range)
   }
@@ -94,28 +94,21 @@ export class CosmosHoverProvider implements vscode.HoverProvider {
     return md
   }
 
-  private buildHover(fn: ApiFunction, document: vscode.TextDocument): vscode.MarkdownString {
+  private buildHover(fn: ApiFunction): vscode.MarkdownString {
     const md = new vscode.MarkdownString()
-    md.isTrusted = true
+    md.isTrusted = false
 
-    this.renderHeader(md, fn)
-    this.renderDescription(md, fn)
     this.renderSignature(md, fn)
-    this.renderNotes(md, fn)
-    this.renderRelated(md, fn)
-    this.renderSnippet(md, fn, document)
+    this.renderDescription(md, fn)
 
     return md
   }
 
-  private renderHeader(md: vscode.MarkdownString, fn: ApiFunction): void {
-    md.appendMarkdown(`## ${fn.label}\n\n`)
-  }
-
   private renderDescription(md: vscode.MarkdownString, fn: ApiFunction): void {
-    if (fn.documentation) {
-      md.appendMarkdown(`${fn.documentation}\n\n`)
-    }
+    const description = fn.documentation ?? fn.detail
+    if (!description) return
+
+    md.appendMarkdown(`${description}\n`)
   }
 
   private renderSignature(md: vscode.MarkdownString, fn: ApiFunction): void {
@@ -133,39 +126,5 @@ export class CosmosHoverProvider implements vscode.HoverProvider {
     } else {
       md.appendMarkdown('\n')
     }
-  }
-
-  private renderNotes(md: vscode.MarkdownString, fn: ApiFunction): void {
-    if (!fn.notes?.length) return
-
-    md.appendMarkdown('Notes:\n')
-    for (const note of fn.notes) {
-      md.appendMarkdown(`- ${note}\n`)
-    }
-    md.appendMarkdown('\n')
-  }
-
-  private renderRelated(md: vscode.MarkdownString, fn: ApiFunction): void {
-    if (!fn.related?.length) return
-
-    md.appendMarkdown(`Related: ${fn.related.join(', ')}\n\n`)
-  }
-
-  private renderSnippet(
-    md: vscode.MarkdownString,
-    fn: ApiFunction,
-    document: vscode.TextDocument,
-  ): void {
-    if (!fn.snippet) return
-
-    const isTS = document.languageId === 'typescript'
-    const variant = isTS ? fn.snippet.ts : fn.snippet.js
-    if (!variant?.body?.length) return
-
-    const lang = isTS ? 'ts' : 'javascript'
-
-    md.appendMarkdown('```' + lang + '\n')
-    variant.body.forEach((line) => md.appendMarkdown(`${line}\n`))
-    md.appendMarkdown('```\n')
   }
 }

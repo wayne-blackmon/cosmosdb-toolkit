@@ -12,16 +12,15 @@
     - Dry-Run mode simulates write and git mutation steps
 
 .USAGE
-    .\checkin.ps1 [-Message "your commit message"] [-DryRun]
+    .\scripts\checkin.ps1 [-Message "your commit message"] [-DryRun]
 
 .EXAMPLES
-    .\checkin.ps1
-        Runs the full pipeline using the default commit message "checkpoint".
+    .\scripts\checkin.ps1
 
-    .\checkin.ps1 -Message "signature provider hardening"
+    .\scripts\checkin.ps1 -Message "signature provider hardening"
         Bumps version, updates CHANGELOG, runs verify, commits, and pushes.
 
-    .\checkin.ps1 -DryRun
+    .\scripts\checkin.ps1 -DryRun
         Shows what WOULD happen, without writing files or mutating git state.
 #>
 
