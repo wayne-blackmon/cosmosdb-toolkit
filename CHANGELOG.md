@@ -9,6 +9,10 @@ Versions are automatically incremented via the check‑in script.
 
 ## [Unreleased]
 
+## [0.2.9] - 2026-03-27
+
+- Version bump via check-in script.
+
 ## [0.2.8] - 2026-03-27
 
 - Version bump via check-in script.
@@ -149,6 +153,7 @@ Versions are automatically incremented via the check‑in script.
   - Completion Provider (context, collection, request, response)
   - Signature Help Provider with overload + parameter documentation
 - Versioning pipeline using `VERSION` + automated CHANGELOG insertion
+
 
 
 

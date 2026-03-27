@@ -151,6 +151,34 @@ function Test-GitWorktreeClean {
     return ($statusLines.Count -eq 0)
 }
 
+function Get-GitHeadCommitTimestampUtc {
+    $timestamp = @(git log -1 --format=%ct HEAD)
+    if ($LASTEXITCODE -ne 0) {
+        throw 'git log failed while resolving HEAD commit timestamp.'
+    }
+
+    $rawTimestamp = ($timestamp | Select-Object -First 1).Trim()
+    if ([string]::IsNullOrWhiteSpace($rawTimestamp)) {
+        throw 'git log returned an empty HEAD commit timestamp.'
+    }
+
+    return [DateTimeOffset]::FromUnixTimeSeconds([long]$rawTimestamp).UtcDateTime
+}
+
+function Test-CanReuseVsix {
+    param(
+        [Parameter(Mandatory = $true)][string]$VsixPath,
+        [Parameter(Mandatory = $true)][datetime]$HeadCommitTimestampUtc
+    )
+
+    if (-not (Test-Path $VsixPath)) {
+        return $false
+    }
+
+    $vsixTimestampUtc = (Get-Item -Path $VsixPath).LastWriteTimeUtc
+    return ($vsixTimestampUtc -ge $HeadCommitTimestampUtc)
+}
+
 function Resolve-VsixOutputPath {
     param(
         [Parameter(Mandatory = $true)]$Package,
@@ -272,6 +300,7 @@ try {
 
     $package = Get-PackageMetadata -Path '.\package.json'
     $vsixOutputPath = Resolve-VsixOutputPath -Package $package -RequestedPath $VsixPath -RepoRoot $repoRoot
+    $headCommitTimestampUtc = Get-GitHeadCommitTimestampUtc
     $authMode = Get-VsceAuthMode -Publisher $package.publisher
     if ($authMode -eq 'pat-prompt' -and -not $DryRun) {
         $restoreVscePat = $true
@@ -305,15 +334,26 @@ try {
     Test-VsceAuthentication -Publisher $package.publisher -AuthMode $authMode
 
     Write-Host 'Packaging extension...' -ForegroundColor Cyan
+    $canReuseVsix = (-not $AllowDirty) -and (Test-CanReuseVsix -VsixPath $vsixOutputPath -HeadCommitTimestampUtc $headCommitTimestampUtc)
     if ($DryRun) {
-        Write-DryRun ("Would run: vsce package --out `"{0}`"" -f $vsixOutputPath)
+        if ($canReuseVsix) {
+            Write-DryRun ("Would reuse existing VSIX at `"{0}`" because it is current with HEAD." -f $vsixOutputPath)
+        }
+        else {
+            Write-DryRun ("Would run: vsce package --out `"{0}`"" -f $vsixOutputPath)
+        }
     }
     else {
-        if (Test-Path $vsixOutputPath) {
-            Remove-Item -Path $vsixOutputPath -Force
+        if ($canReuseVsix) {
+            Write-Host ("Reusing existing VSIX at: {0}" -f $vsixOutputPath) -ForegroundColor Yellow
         }
+        else {
+            if (Test-Path $vsixOutputPath) {
+                Remove-Item -Path $vsixOutputPath -Force
+            }
 
-        Invoke-CheckedCommand -Title 'VSCE Package' -Action { vsce package --out $vsixOutputPath }
+            Invoke-CheckedCommand -Title 'VSCE Package' -Action { vsce package --out $vsixOutputPath }
+        }
 
         if (-not (Test-Path $vsixOutputPath)) {
             throw "Packaging failed: expected VSIX was not produced at '$vsixOutputPath'."
