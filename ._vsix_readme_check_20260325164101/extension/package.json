@@ -2,9 +2,9 @@
   "name": "cosmosdb-toolkit",
   "displayName": "Cosmos DB Toolkit",
   "description": "Developer tooling for Azure Cosmos DB server-side JavaScript (stored procedures, triggers, UDFs).",
-  "version": "0.2.7",
+  "version": "0.2.5",
   "publisher": "wayne-blackmon",
-  "icon": "assets/icon/space-tools-1024.png",
+  "icon": "assets/icon/icon-dark.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/wayne-blackmon/cosmosdb-toolkit.git"
@@ -60,5 +60,6 @@
     "serialize-javascript": "^7.0.5"
   }
 }
+
 
 

@@ -1,222 +1,327 @@
 # Cosmos DB Toolkit for VS Code
 
-A lightweight, metadata‑driven IntelliSense extension for Azure Cosmos DB server‑side JavaScript  
-(stored procedures, triggers, and UDFs).
-
-Repository: [github.com/wayne-blackmon/cosmosdb-toolkit](https://github.com/wayne-blackmon/cosmosdb-toolkit)
-
-## Support
-
-If this extension helps your workflow, you can support development here:
-
-[![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-0070BA?logo=paypal&logoColor=white)](https://www.paypal.com/donate/?hosted_button_id=PN9F8GZ75NUAW)
-
-This toolkit provides:
-
-- ✔ Completion suggestions for all Cosmos DB server‑side APIs
-- ✔ Signature help with per-parameter documentation
-- ✔ Hover tooltips powered by structured metadata, with receiver-aware disambiguation
-- ✔ Diagnostics with actionable messages, diagnostic codes, and suggestions for unknown APIs
-- ✔ Built‑in JavaScript and TypeScript scratchpads for rapid iteration
-- ✔ A clean, deterministic test suite
+**The fastest way to write Azure Cosmos DB server‑side JavaScript.**  
+IntelliSense, signatures, snippets, diagnostics, and documentation — all powered by a governed metadata engine.
 
 ---
 
-## Why This Toolkit Exists
+## ✨ What This Extension Does
 
-Cosmos DB’s server‑side JavaScript API is powerful but historically under‑documented inside the editor.  
-This extension solves that by providing:
+Azure Cosmos DB’s server‑side JavaScript API is powerful — but historically under‑documented inside the editor. Writing stored procedures, triggers, and UDFs often meant memorizing APIs or digging through old samples.
 
-- A **typed metadata schema** describing every API function
-- A **drift‑validated metadata file** aligned with the Cosmos SDK
-- IntelliSense surfaces (completion, hover, signature help) that stay correct over time
-- A **scratchpad workflow** for rapid stored procedure development
+This extension fixes that.
 
-The result is a predictable, developer‑friendly experience for anyone writing Cosmos DB server‑side code.
+You get:
 
----
+- Smart IntelliSense for all server‑side APIs
+- Signature help with per‑parameter documentation
+- Hover docs with clear explanations
+- Snippets for common stored procedure patterns
+- Diagnostics for unknown or incorrect API usage
+- Scratchpads for rapid stored procedure development
+- Support for both JavaScript and TypeScript
 
-## Features
-
-### 🔹 Metadata‑Driven IntelliSense
-
-All IntelliSense is powered by structured metadata split into core API definitions and snippet variants:
-
-- \`src/providers/metadata/cosmosApi.core.ts\`
-- \`src/providers/metadata/cosmosApi.snippets.ts\`
-- \`src/providers/metadata/cosmosApi.ts\` (merged export)
-
-A typed metadata schema defines the structure for all API groups, functions, signatures, and parameters:
-
-- \`src/providers/metadata/metadataSchema.ts\`
-
-This includes:
-
-- API groups (\`context\`, \`collection\`, \`request\`, \`response\`)
-- Functions
-- Parameters
-- Overloads
-- Documentation
-
-### 🔹 Completion Provider
-
-Automatically suggests Cosmos DB server‑side functions when typing:
-
-- \`getContext().\`
-- \`getCollection().\`
-- \`getRequest().\`
-- \`getResponse().\`
-
-### 🔹 Signature Help Provider
-
-Displays function signatures and parameter documentation when typing:
-
-- \`(\`
-- \`,\`
-
-### 🔹 Hover Provider
-
-Shows concise, signature-first documentation when hovering over:
-
-- \`getContext\`
-- \`queryDocuments\`
-- \`createDocument\`
-- \`setStatusCode\`
-- …and all other Cosmos DB server‑side APIs
-
-The hover provider is metadata-driven and works in both file-backed and untitled documents. It disambiguates functions that appear on multiple interfaces (for example `request.setBody` vs `response.setBody`) by inspecting the receiver in the line prefix. Hover content currently includes the primary TypeScript signature and a concise description sourced from metadata.
-
-### 🔹 Diagnostics Provider
-
-Provides inline diagnostics as you type, covering three rules:
-
-| Rule                   | Severity | Description                                                                           |
-| ---------------------- | -------- | ------------------------------------------------------------------------------------- |
-| Missing `getContext()` | Hint     | Flags files that never call `getContext()`, with an actionable suggestion             |
-| Unknown entry point    | Warning  | Flags calls like `getBanana()` that don't match a known Cosmos DB context entry point |
-| Unknown function       | Warning  | Flags unrecognised function names and suggests the closest known alternatives         |
-
-All diagnostics carry a machine-readable `code` (`cosmosdb.missingContext`, `cosmosdb.unknownEntryPoint`, `cosmosdb.unknownFunction`) for tooling and quick-fix integration.
-
-### 🔹 Scratchpad Command
-
-Quickly open both JavaScript and TypeScript scratchpads for writing stored procedures:
-
-- Command category: **Cosmos DB**
-- Command title: **Cosmos DB: Open Scratchpad**
-- Command ID: `cosmosdb-toolkit.openScratchpad`
-- Command icon: theme-aware (`assets/icon/icon-light.png` for light themes, `assets/icon/icon-dark.png` for dark themes)
-
-The command provides a status bar confirmation on success and a user-visible error message on failure.
-
-### 🔹 Extension Icon
-
-- Marketplace/Extensions view icon: `assets/icon/icon-dark.png`
-- Command UI icon: theme-aware object in `package.json` using `icon-light.png` and `icon-dark.png`
-
-### 🔹 Test Suite
-
-Located under:
-
-- \`src/test\`
-
-Includes:
-
-- Completion provider tests
-- Signature help provider tests
-- Hover provider tests (including receiver-disambiguation regression)
-- Diagnostics provider tests
-- Metadata drift validation (ensures metadata matches the Cosmos SDK)
-- Snippet validation (ensures all API functions have JS + TS snippet variants)
-- Scratchpad tests
-- Extension activation tests
-
-Run tests with:
-
-\`\`\`
-npm test
-\`\`\`
-
-Run full pre-checkin verification (compile + lint + tests) with:
-
-\`\`\`
-npm run verify
-\`\`\`
+All IntelliSense surfaces are powered by a typed, validated metadata file aligned with the official Cosmos DB SDK.
 
 ---
 
-## Getting Started
+## 🚀 Quickstart
 
-1. Install dependencies  
-   \`\`\`
-   npm install
-   \`\`\`
+### 1. Install the extension
 
-2. Build the extension  
-   \`\`\`
-   npm run compile
-   \`\`\`
+Search for “Cosmos DB Toolkit” in the VS Code Marketplace.
 
-3. Launch the extension in VS Code
-   - Press **F5** to open a new Extension Development Host
+### 2. Open a stored procedure file
 
-4. Open the scratchpad
-   - Run **Cosmos DB: Open Scratchpad** from the Command Palette
+Create a .js or .ts file and start typing:
 
----
+const ctx = getContext()
+const col = ctx.getCollection()
 
-## Development Workflow
+col.queryDocuments(
+  col.getSelfLink(),
+  'SELECT * FROM c',
+  (err, docs) => {
+    if (err) throw err
+    ctx.getResponse().setBody(docs)
+  }
+)
 
-This project uses a deterministic, test‑gated workflow:
+You’ll immediately see completions, signature help, hover documentation, and diagnostics.
 
-- All code is typed and validated against the metadata schema
-- Metadata drift tests ensure alignment with the Cosmos SDK
-- The test suite must pass before check‑in
-- Versioning and CHANGELOG updates are automated via the check‑in script
+### 3. Use the Scratchpad
 
-Folder structure:
+Open the Command Palette and run:
 
-```text
-scripts/
-  checkin.ps1
-  publish.ps1
+Cosmos DB: Open Scratchpad
 
-src/
-  extension.ts
-
-  providers/
-    CosmosCompletionProvider.ts
-    CosmosDiagnosticsProvider.ts
-    CosmosHoverProvider.ts
-    CosmosSignatureProvider.ts
-    metadata/
-      cosmosApi.core.ts
-      cosmosApi.snippets.ts
-      cosmosApi.ts
-      metadataSchema.ts
-
-  snippets/
-    sprocs.ts
-
-  test/
-    runTest.ts
-    suite/
-      completionProvider.test.ts
-      diagnosticProvider.test.ts
-      extension.test.ts
-      hoverProvider.test.ts
-      index.ts
-      metadataValidator.test.ts
-      scratchpad.test.ts
-      scratchpadCompletions.test.ts
-      scratchpadSignatures.test.ts
-      signaturePovider.test.ts
-      snippetValidator.test.ts
-      tabExpansion.test.ts
-```
+This opens a ready‑to‑use JavaScript or TypeScript scratchpad for rapid iteration.
 
 ---
 
-## Status
+## 📘 How to Use the Cosmos DB Toolkit
 
-This extension is under active development. All IntelliSense surfaces are metadata‑driven and fully validated, with a deterministic test‑gated release pipeline.
+This section walks you through writing Cosmos DB stored procedures, triggers, and UDFs using IntelliSense, signatures, snippets, and diagnostics.
+
+It covers:
+
+- Supported server‑side APIs
+- Types of stored procedures
+- How to use snippets
+- How to write a stored procedure from scratch
+- How IntelliSense helps at every step
+
+---
+
+## 1. Supported Cosmos DB Server‑Side APIs
+
+The Toolkit includes full IntelliSense coverage for all documented server‑side JavaScript APIs.
+
+### Context API (IContext)
+
+- getContext()
+- getCollection()
+- getRequest()
+- getResponse()
+
+### Collection API (ICollection)
+
+- queryDocuments(link, filter, options, callback)
+- readDocument(link, options, callback)
+- createDocument(link, body, options, callback)
+- replaceDocument(link, body, options, callback)
+- deleteDocument(link, options, callback)
+- readAttachments(link, options, callback)
+- createAttachment(link, body, options, callback)
+- queryAttachments(link, filter, options, callback)
+- …and all other server‑side collection methods
+
+### Request API (IRequest)
+
+- getBody()
+- getValue()
+- setBody(body)
+- setValue(value)
+
+### Response API (IResponse)
+
+- setBody(body)
+- setStatusCode(code)
+- getBody()
+- getStatusCode()
+
+Every method includes completions, signature help, hover documentation, and JS/TS snippet variants.
+
+---
+
+## 2. Types of Stored Procedures You Can Build
+
+Cosmos DB supports several stored procedure patterns. The Toolkit includes snippets and IntelliSense for all of them.
+
+- Basic stored procedure
+- Query loop stored procedure (continuation token handling)
+- Bulk insert stored procedure
+- Hybrid read/write/query stored procedure
+- Pre‑trigger / Post‑trigger
+- User‑defined functions (UDFs)
+
+Each pattern has a snippet prefix:
+cosmos.sproc, cosmos.bulk.insert, cosmos.query.loop, cosmos.trigger.pre, cosmos.udf, etc.
+
+---
+
+## 3. Creating a Stored Procedure Using Snippets
+
+Snippets are the fastest way to start writing Cosmos DB server‑side code.
+
+### Step 1 — Create a .js or .ts file
+
+Example: mySproc.js
+
+### Step 2 — Type the snippet prefix
+
+cosmos.sproc
+
+### Step 3 — Press TAB
+
+You get a ready‑to‑edit template:
+
+function sampleSproc() {
+  const context = getContext()
+  const collection = context.getCollection()
+  const response = context.getResponse()
+
+  // TODO: Add your logic here
+  response.setBody('Hello from Cosmos DB!')
+}
+
+### Step 4 — Fill in your logic
+
+As you type:
+
+- IntelliSense suggests valid API calls
+- Signature help shows parameter details
+- Hover docs explain each method
+- Diagnostics warn about unknown APIs or missing getContext()
+
+---
+
+## 4. Example: Query Loop Stored Procedure
+
+Type:
+cosmos.query.loop
+
+Press TAB:
+
+function queryLoop() {
+  const context = getContext()
+  const collection = context.getCollection()
+  const response = context.getResponse()
+
+  const query = 'SELECT * FROM c'
+  const results = []
+
+  const run = (continuation) => {
+    const options = { continuation }
+    const isAccepted = collection.queryDocuments(
+      collection.getSelfLink(),
+      query,
+      options,
+      (err, docs, token) => {
+        if (err) throw err
+
+        results.push(...docs)
+
+        if (token) {
+          run(token)
+        } else {
+          response.setBody(results)
+        }
+      }
+    )
+
+    if (!isAccepted) {
+      response.setBody('Request not accepted by server.')
+    }
+  }
+
+  run()
+}
+
+---
+
+## 5. Example: Bulk Insert Stored Procedure
+
+Type:
+cosmos.bulk.insert
+
+Press TAB:
+
+function bulkInsert(docs) {
+  const context = getContext()
+  const collection = context.getCollection()
+  const response = context.getResponse()
+
+  let count = 0
+
+  const insertNext = () => {
+    if (count >= docs.length) {
+      response.setBody({ inserted: count })
+      return
+    }
+
+    const isAccepted = collection.createDocument(
+      collection.getSelfLink(),
+      docs[count],
+      (err) => {
+        if (err) throw err
+        count++
+        insertNext()
+      }
+    )
+
+    if (!isAccepted) {
+      response.setBody({ inserted: count })
+    }
+  }
+
+  insertNext()
+}
+
+---
+
+## 6. Example: Trigger
+
+Type:
+cosmos.trigger.pre  
+or  
+cosmos.trigger.post
+
+function preTrigger() {
+  const request = getContext().getRequest()
+  const body = request.getBody()
+
+  body.timestamp = new Date().toISOString()
+
+  request.setBody(body)
+}
+
+---
+
+## 7. Example: UDF
+
+Type:
+cosmos.udf
+
+function udf(input) {
+  return input.toUpperCase()
+}
+
+---
+
+## 8. How IntelliSense Helps While You Type
+
+As you write:
+
+- getContext(). → shows all context methods
+- collection. → shows all collection methods
+- setBody( → shows signature + documentation
+- Hovering any method → shows metadata‑driven docs
+- Unknown API names → produce diagnostics with suggestions
+
+This makes Cosmos DB server‑side development dramatically easier.
+
+---
+
+## 🧠 Features
+
+- IntelliSense for all server‑side APIs
+- Signature help with parameter documentation
+- Hover documentation with related APIs
+- Diagnostics for unknown or incorrect API usage
+- Snippets for every API (JS + TS)
+- Scratchpads for rapid development
+
+---
+
+## 📚 Documentation & Contributing
+
+See:
+
+- CONTRIBUTING.md
+- ARCHITECTURE.md
+- TESTING.md
+
+---
+
+## ❤️ Support Development
+
+If this extension improves your workflow, you can support ongoing development:
+
+<https://www.paypal.com/donate/?hosted_button_id=PN9F8GZ75NUAW>
+
+---
+
+## 🧭 Status
+
+The extension is under active development. All IntelliSense surfaces are metadata‑driven and validated against the Cosmos DB SDK.

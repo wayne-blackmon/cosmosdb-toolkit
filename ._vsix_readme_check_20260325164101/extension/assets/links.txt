@@ -1,2 +1,3 @@
 https://copilot.microsoft.com/th/id/BCO.c2169c62-65f7-4230-8b38-20d703a44025.png
 https://copilot.microsoft.com/th/id/BCO.b96842f7-0f65-4701-b10f-909f67b024a4.png
+https://dev.azure.com/wayne-blackmon/_usersSettings/tokens
