@@ -333,11 +333,12 @@ try {
 
     Write-Host 'Publishing to Marketplace...' -ForegroundColor Cyan
     if ($DryRun) {
-        Write-DryRun 'Would run: vsce publish'
+        Write-DryRun ('Would run: vsce publish --packagePath "{0}"' -f $vsixOutputPath)
         Write-Host 'Dry run complete. No publish was performed.' -ForegroundColor Yellow
     }
     else {
-        Invoke-VsceCommandWithRetry -Title 'VSCE Publish' -Action { vsce publish } -MaxAttempts $NetworkRetryCount -InitialDelaySeconds $NetworkRetryDelaySeconds
+        # Publish the deterministic VSIX artifact created above so retry attempts avoid repackaging.
+        Invoke-VsceCommandWithRetry -Title 'VSCE Publish' -Action { vsce publish --packagePath $vsixOutputPath } -MaxAttempts $NetworkRetryCount -InitialDelaySeconds $NetworkRetryDelaySeconds
         Write-Host 'Publish complete.' -ForegroundColor Green
     }
 }
