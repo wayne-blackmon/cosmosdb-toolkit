@@ -50,8 +50,8 @@ suite('Cosmos Diagnostics Provider', () => {
       language: 'javascript',
       content: `
         function run() {
-          getContext();
-          doSomethingNotReal(123);
+          const ctx = getContext();
+          ctx.doSomethingNotReal(123);
         }
       `,
     })

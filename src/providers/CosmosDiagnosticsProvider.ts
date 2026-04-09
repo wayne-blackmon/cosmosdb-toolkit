@@ -11,20 +11,34 @@ export interface ICosmosDiagnosticsProvider {
 export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
   readonly collection: vscode.DiagnosticCollection
   private readonly entryPoints: Set<string>
+  private readonly knownFunctions: Set<string>
+  private readonly knownFunctionList: string[]
 
   constructor(private readonly context: vscode.ExtensionContext) {
     this.collection = vscode.languages.createDiagnosticCollection('cosmosdb-toolkit')
     this.context.subscriptions.push(this.collection)
 
     this.entryPoints = new Set(['getContext', 'getCollection', 'getRequest', 'getResponse'])
+    this.knownFunctions = new Set<string>()
+    for (const group of Object.values(cosmosApi)) {
+      for (const fn of group.functions) {
+        this.knownFunctions.add(fn.label)
+      }
+    }
+    this.knownFunctionList = Array.from(this.knownFunctions).sort()
 
-    // Initial pass
+    //
+    // Initial pass – only on Cosmos-relevant documents
+    //
     vscode.workspace.textDocuments.forEach((doc) => {
       if (this.isCosmosDocument(doc)) {
         this.refreshDiagnostics(doc)
       }
     })
 
+    //
+    // Live updates – only on Cosmos-relevant documents
+    //
     this.context.subscriptions.push(
       vscode.workspace.onDidOpenTextDocument((doc) => {
         if (this.isCosmosDocument(doc)) {
@@ -47,24 +61,58 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
     this.collection.dispose()
   }
 
+  /**
+   * Decide whether this document is even eligible for Cosmos diagnostics.
+   *
+   * Hard rules:
+   * - Only workspace/untitled documents (no vscode://, output://, etc.)
+   * - Only .js, .sql, .json (Cosmos server-side artifacts)
+   * - Never analyze the extension’s own source / build / test files
+   */
   private isCosmosDocument(document: vscode.TextDocument): boolean {
-    // Only run diagnostics on untitled or workspace files, not extension/test internals
-    if (document.uri.scheme !== 'file' && document.uri.scheme !== 'untitled') {
+    const { uri } = document
+
+    // Only run diagnostics on untitled or workspace files, not virtual/output/etc.
+    if (uri.scheme !== 'file' && uri.scheme !== 'untitled') {
       return false
     }
 
-    // Only JS/TS
-    if (document.languageId !== 'javascript' && document.languageId !== 'typescript') {
+    const fsPath = uri.fsPath.toLowerCase()
+
+    // File-type gate: Cosmos server-side artifacts are JS/SQL/JSON, not TS.
+    // Untitled documents use languageId instead of file extension.
+    if (uri.scheme === 'untitled') {
+      if (document.languageId !== 'javascript' && document.languageId !== 'sql') {
+        return false
+      }
+    } else if (
+      !fsPath.endsWith('.js') &&
+      !fsPath.endsWith('.sql') &&
+      !fsPath.endsWith('.json')
+    ) {
       return false
     }
 
-    // Ignore files inside node_modules, out/, test/, .vscode-test/
-    const path = document.uri.fsPath.toLowerCase()
+    // Ignore common non-user-code locations
     if (
-      path.includes('node_modules') ||
-      path.includes('out\\test') ||
-      path.includes('out/test') ||
-      path.includes('.vscode-test')
+      fsPath.includes('node_modules') ||
+      fsPath.includes('out\\test') ||
+      fsPath.includes('out/test') ||
+      fsPath.includes('.vscode-test')
+    ) {
+      return false
+    }
+
+    // Never analyze the extension’s own implementation / metadata / scratchpads
+    if (
+      fsPath.includes('\\src\\') ||
+      fsPath.includes('/src/') ||
+      fsPath.includes('\\providers\\') ||
+      fsPath.includes('/providers/') ||
+      fsPath.includes('\\metadata\\') ||
+      fsPath.includes('/metadata/') ||
+      fsPath.includes('\\scratchpad\\') ||
+      fsPath.includes('/scratchpad/')
     ) {
       return false
     }
@@ -73,15 +121,28 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
   }
 
   private refreshDiagnostics(document: vscode.TextDocument): void {
-    // Skip diagnostics for scratchpads
+    // Absolute safety: if this ever gets called directly, still respect the gate.
+    if (!this.isCosmosDocument(document)) {
+      this.collection.delete(document.uri)
+      return
+    }
+
+    // Skip diagnostics for scratchpads (defensive, in case paths change)
     if (document.uri.path.includes('scratchpad')) {
+      this.collection.set(document.uri, [])
+      return
+    }
+
+    const text = document.getText()
+    // Untitled documents (scratchpad-like workflow) are always treated as Cosmos scripts.
+    // For file-based documents, apply the heuristic to avoid false positives.
+    if (document.uri.scheme !== 'untitled' && !this.isLikelyCosmosScript(text)) {
       this.collection.set(document.uri, [])
       return
     }
 
     try {
       const diagnostics: vscode.Diagnostic[] = []
-      const text = document.getText()
 
       this.checkMissingContext(document, text, diagnostics)
       this.checkUnknownEntryPoints(document, text, diagnostics)
@@ -92,6 +153,29 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
       // Clear stale diagnostics so the file doesn't show phantom errors
       this.collection.delete(document.uri)
     }
+  }
+
+  /**
+   * Heuristic: does this text look like a Cosmos server-side script?
+   *
+   * We intentionally avoid treating generic "context" / "request" variables
+   * as Cosmos receivers, to prevent false positives on VS Code extension code.
+   */
+  private isLikelyCosmosScript(text: string): boolean {
+    // Strong signal: direct entry-point call
+    const hasEntryPointCall = /\b(?:getContext|getCollection|getRequest|getResponse)\s*\(/.test(text)
+    if (hasEntryPointCall) {
+      return true
+    }
+
+    // Secondary signal: entry-point result used as a receiver
+    // e.g., getContext().getCollection(), getContext().getResponse(), etc.
+    const hasCosmosReceiverCall =
+      /\b(?:getContext\(\)|getCollection\(\)|getRequest\(\)|getResponse\(\))\s*\.\s*[A-Za-z_$][\w$]*\s*\(/.test(
+        text,
+      )
+
+    return hasCosmosReceiverCall
   }
 
   // Rule 1: Hint if no getContext() at all
@@ -150,21 +234,13 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
     text: string,
     diagnostics: vscode.Diagnostic[],
   ): void {
-    const functionCallPatternString = '\\b(?:[A-Za-z0-9_]+\\.)?([A-Za-z0-9_]+)\\s*\\('
+    const functionCallPatternString =
+      '\\b(getContext\\(\\)|getCollection\\(\\)|getRequest\\(\\)|getResponse\\(\\)|context|collection|request|response|ctx|coll|col|req|res)\\s*\\.\\s*([A-Za-z0-9_]+)\\s*\\('
     const functionCallPattern = new RegExp(functionCallPatternString, 'g')
-
-    const knownFunctions = new Set<string>()
-    for (const group of Object.values(cosmosApi)) {
-      for (const fn of group.functions) {
-        knownFunctions.add(fn.label)
-      }
-    }
-
-    const knownFunctionList = Array.from(knownFunctions).sort()
 
     let match: RegExpExecArray | null
     while ((match = functionCallPattern.exec(text)) !== null) {
-      const name = match[1]
+      const name = match[2]
 
       if (this.entryPoints.has(name)) continue
       if (['function', 'if', 'for', 'while', 'return', 'switch'].includes(name)) continue
@@ -175,10 +251,10 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
         continue
       }
 
-      if (!knownFunctions.has(name)) {
+      if (!this.knownFunctions.has(name)) {
         const position = document.positionAt(match.index)
         const range = new vscode.Range(position, position.translate(0, name.length))
-        const suggestions = knownFunctionList.filter(
+        const suggestions = this.knownFunctionList.filter(
           (known) =>
             known.toLowerCase().startsWith(name.toLowerCase().slice(0, 1)) ||
             known.toLowerCase().includes(name.toLowerCase()),
@@ -198,7 +274,7 @@ export class CosmosDiagnosticsProvider implements ICosmosDiagnosticsProvider {
         diagnostic.relatedInformation = [
           new vscode.DiagnosticRelatedInformation(
             new vscode.Location(document.uri, range),
-            `Known Cosmos DB functions: ${knownFunctionList.join(', ')}`,
+            `Known Cosmos DB functions: ${this.knownFunctionList.join(', ')}`,
           ),
         ]
         diagnostics.push(diagnostic)

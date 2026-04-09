@@ -12,8 +12,10 @@ export async function activate(context: vscode.ExtensionContext) {
   //
   // DIAGNOSTICS PROVIDER
   //
-  const diagnosticsProvider = new CosmosDiagnosticsProvider(context)
-  context.subscriptions.push(diagnosticsProvider)
+  if (context.extensionMode !== vscode.ExtensionMode.Development) {
+    const diagnosticsProvider = new CosmosDiagnosticsProvider(context)
+    context.subscriptions.push(diagnosticsProvider)
+  }
 
   //
   // HOVER PROVIDER

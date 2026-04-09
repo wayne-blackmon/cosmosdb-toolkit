@@ -1,20 +1,20 @@
 # Cosmos DB Toolkit for VS Code
 
-**The fastest way to write Azure Cosmos DB server‑side JavaScript.**  
-IntelliSense, signatures, snippets, diagnostics, and documentation — all powered by a governed metadata engine.
+**The fastest way to write Azure Cosmos DB server-side JavaScript.**
+IntelliSense, signatures, snippets, diagnostics, and documentation all powered by a governed metadata engine.
 
 ---
 
-## ✨ What This Extension Does
+## What This Extension Does
 
-Azure Cosmos DB’s server‑side JavaScript API is powerful — but historically under‑documented inside the editor. Writing stored procedures, triggers, and UDFs often meant memorizing APIs or digging through old samples.
+Azure Cosmos DB's server-side JavaScript API is powerful, but historically under-documented inside the editor. Writing stored procedures, triggers, and UDFs often meant memorizing APIs or digging through old samples.
 
 This extension fixes that.
 
 You get:
 
-- Smart IntelliSense for all server‑side APIs
-- Signature help with per‑parameter documentation
+- Smart IntelliSense for all server-side APIs
+- Signature help with per-parameter documentation
 - Hover docs with clear explanations
 - Snippets for common stored procedure patterns
 - Diagnostics for unknown or incorrect API usage
@@ -25,47 +25,47 @@ All IntelliSense surfaces are powered by a typed, validated metadata file aligne
 
 ---
 
-## 🚀 Quickstart
+## Quickstart
 
 ### 1. Install the extension
 
-Search for “Cosmos DB Toolkit” in the VS Code Marketplace.
+Search for **Cosmos DB Toolkit** in the VS Code Marketplace.
 
 ### 2. Open a stored procedure file
 
-Create a .js or .ts file and start typing:
+Create a `.js` or `.ts` file and start typing:
 
+```javascript
 const ctx = getContext()
 const col = ctx.getCollection()
 
-col.queryDocuments(
-  col.getSelfLink(),
-  'SELECT * FROM c',
-  (err, docs) => {
-    if (err) throw err
-    ctx.getResponse().setBody(docs)
-  }
-)
+col.queryDocuments(col.getSelfLink(), 'SELECT * FROM c', {}, (err, docs) => {
+  if (err) throw err
+  ctx.getResponse().setBody(docs)
+})
+```
 
-You’ll immediately see completions, signature help, hover documentation, and diagnostics.
+You'll immediately see completions, signature help, hover documentation, and diagnostics.
 
 ### 3. Use the Scratchpad
 
 Open the Command Palette and run:
 
+```text
 Cosmos DB: Open Scratchpad
+```
 
-This opens a ready‑to‑use JavaScript or TypeScript scratchpad for rapid iteration.
+This opens a ready-to-use JavaScript or TypeScript scratchpad for rapid iteration.
 
 ---
 
-## 📘 How to Use the Cosmos DB Toolkit
+## How to Use the Cosmos DB Toolkit
 
-This section walks you through writing Cosmos DB stored procedures, triggers, and UDFs using IntelliSense, signatures, snippets, and diagnostics.
+This section walks through writing Cosmos DB stored procedures, triggers, and UDFs using IntelliSense, signatures, snippets, and diagnostics.
 
 It covers:
 
-- Supported server‑side APIs
+- Supported server-side APIs
 - Types of stored procedures
 - How to use snippets
 - How to write a stored procedure from scratch
@@ -73,106 +73,112 @@ It covers:
 
 ---
 
-## 1. Supported Cosmos DB Server‑Side APIs
+## 1. Supported Cosmos DB Server-Side APIs
 
-The Toolkit includes full IntelliSense coverage for all documented server‑side JavaScript APIs.
+The toolkit includes full IntelliSense coverage for all documented server-side JavaScript APIs.
 
-### Context API (IContext)
+### Context API (`IContext`)
 
-- getContext()
-- getCollection()
-- getRequest()
-- getResponse()
+- `getContext()`
+- `getCollection()`
+- `getRequest()`
+- `getResponse()`
 
-### Collection API (ICollection)
+### Collection API (`ICollection`)
 
-- queryDocuments(link, filter, options, callback)
-- readDocument(link, options, callback)
-- createDocument(link, body, options, callback)
-- replaceDocument(link, body, options, callback)
-- deleteDocument(link, options, callback)
-- readAttachments(link, options, callback)
-- createAttachment(link, body, options, callback)
-- queryAttachments(link, filter, options, callback)
-- …and all other server‑side collection methods
+- `queryDocuments(link, filter, options, callback)`
+- `readDocument(link, options, callback)`
+- `createDocument(link, body, options, callback)`
+- `replaceDocument(link, body, options, callback)`
+- `deleteDocument(link, options, callback)`
+- `readAttachments(link, options, callback)`
+- `createAttachment(link, body, options, callback)`
+- `queryAttachments(link, filter, options, callback)`
+- And all other documented server-side collection methods
 
-### Request API (IRequest)
+### Request API (`IRequest`)
 
-- getBody()
-- getValue()
-- setBody(body)
-- setValue(value)
+- `getBody()`
+- `getValue()`
+- `setBody(body)`
+- `setValue(value)`
 
-### Response API (IResponse)
+### Response API (`IResponse`)
 
-- setBody(body)
-- setStatusCode(code)
-- getBody()
-- getStatusCode()
+- `setBody(body)`
+- `setStatusCode(code)`
+- `getBody()`
+- `getStatusCode()`
 
-Every method includes completions, signature help, hover documentation, and JS/TS snippet variants.
+Every method includes completions, signature help, hover documentation, and JavaScript and TypeScript snippet variants.
 
 ---
 
 ## 2. Types of Stored Procedures You Can Build
 
-Cosmos DB supports several stored procedure patterns. The Toolkit includes snippets and IntelliSense for all of them.
+Cosmos DB supports several stored procedure patterns. The toolkit includes snippets and IntelliSense for all of them.
 
 - Basic stored procedure
-- Query loop stored procedure (continuation token handling)
+- Query loop stored procedure with continuation token handling
 - Bulk insert stored procedure
-- Hybrid read/write/query stored procedure
-- Pre‑trigger / Post‑trigger
-- User‑defined functions (UDFs)
+- Hybrid read, write, and query stored procedure
+- Pre-trigger and post-trigger
+- User-defined functions (UDFs)
 
-Each pattern has a snippet prefix:
-cosmos.sproc, cosmos.bulk.insert, cosmos.query.loop, cosmos.trigger.pre, cosmos.udf, etc.
+Each pattern has a snippet prefix such as `cosmos.sproc`, `cosmos.bulk.insert`, `cosmos.query.loop`, `cosmos.trigger.pre`, or `cosmos.udf`.
 
 ---
 
 ## 3. Creating a Stored Procedure Using Snippets
 
-Snippets are the fastest way to start writing Cosmos DB server‑side code.
+Snippets are the fastest way to start writing Cosmos DB server-side code.
 
-### Step 1 — Create a .js or .ts file
+### Step 1: Create a `.js` or `.ts` file
 
-Example: mySproc.js
+Example: `mySproc.js`
 
-### Step 2 — Type the snippet prefix
+### Step 2: Type the snippet prefix
 
+```text
 cosmos.sproc
+```
 
-### Step 3 — Press TAB
+### Step 3: Press Tab
 
-You get a ready‑to‑edit template:
+You get a ready-to-edit template:
 
+```javascript
 function sampleSproc() {
   const context = getContext()
   const collection = context.getCollection()
   const response = context.getResponse()
 
-  // TODO: Add your logic here
   response.setBody('Hello from Cosmos DB!')
 }
+```
 
-### Step 4 — Fill in your logic
+### Step 4: Fill in your logic
 
 As you type:
 
 - IntelliSense suggests valid API calls
 - Signature help shows parameter details
 - Hover docs explain each method
-- Diagnostics warn about unknown APIs or missing getContext()
+- Diagnostics warn about unknown APIs or missing `getContext()`
 
 ---
 
 ## 4. Example: Query Loop Stored Procedure
 
 Type:
+
+```text
 cosmos.query.loop
+```
 
-Press TAB:
+Press Tab:
 
+```javascript
 function queryLoop() {
   const context = getContext()
   const collection = context.getCollection()
@@ -197,7 +203,7 @@ function queryLoop() {
         } else {
           response.setBody(results)
         }
-      }
+      },
     )
 
     if (!isAccepted) {
@@ -207,16 +213,21 @@ function queryLoop() {
 
   run()
 }
+```
 
 ---
 
 ## 5. Example: Bulk Insert Stored Procedure
 
 Type:
+
+```text
 cosmos.bulk.insert
+```
 
-Press TAB:
+Press Tab:
 
+```javascript
 function bulkInsert(docs) {
   const context = getContext()
   const collection = context.getCollection()
@@ -233,11 +244,12 @@ function bulkInsert(docs) {
     const isAccepted = collection.createDocument(
       collection.getSelfLink(),
       docs[count],
+      {},
       (err) => {
         if (err) throw err
         count++
         insertNext()
-      }
+      },
     )
 
     if (!isAccepted) {
@@ -247,16 +259,20 @@ function bulkInsert(docs) {
 
   insertNext()
 }
+```
 
 ---
 
 ## 6. Example: Trigger
 
-Type:
-cosmos.trigger.pre  
-or  
-cosmos.trigger.post
+Type either:
 
+```text
+cosmos.trigger.pre
+cosmos.trigger.post
+```
+
+```javascript
 function preTrigger() {
   const request = getContext().getRequest()
   const body = request.getBody()
@@ -265,17 +281,23 @@ function preTrigger() {
 
   request.setBody(body)
 }
+```
 
 ---
 
 ## 7. Example: UDF
 
 Type:
-cosmos.udf
 
+```text
+cosmos.udf
+```
+
+```javascript
 function udf(input) {
   return input.toUpperCase()
 }
+```
 
 ---
 
@@ -283,45 +305,45 @@ function udf(input) {
 
 As you write:
 
-- getContext(). → shows all context methods
-- collection. → shows all collection methods
-- setBody( → shows signature + documentation
-- Hovering any method → shows metadata‑driven docs
-- Unknown API names → produce diagnostics with suggestions
+- `getContext().` shows all context methods
+- `collection.` shows all collection methods
+- `setBody(` shows signature and documentation
+- Hovering any method shows metadata-driven docs
+- Unknown API names produce diagnostics with suggestions
 
-This makes Cosmos DB server‑side development dramatically easier.
+This makes Cosmos DB server-side development dramatically easier.
 
 ---
 
-## 🧠 Features
+## Features
 
-- IntelliSense for all server‑side APIs
+- IntelliSense for all server-side APIs
 - Signature help with parameter documentation
 - Hover documentation with related APIs
 - Diagnostics for unknown or incorrect API usage
-- Snippets for every API (JS + TS)
+- Snippets for every API in JavaScript and TypeScript
 - Scratchpads for rapid development
 
 ---
 
-## 📚 Documentation & Contributing
+## Documentation and Contributing
 
-See:
+See the project docs:
 
-- CONTRIBUTING.md
-- ARCHITECTURE.md
-- TESTING.md
+- [CONTRIBUTING.md](./CONTRIBUTING.md)
+- [ARCHITECTURE.md](./ARCHITECTURE.md)
+- [TESTING.md](./TESTING.md)
 
 ---
 
-## ❤️ Support Development
+## Support Development
 
-If this extension improves your workflow, you can support ongoing development:
+If this extension improves your workflow, you can support ongoing development here:
 
 <https://www.paypal.com/donate/?hosted_button_id=PN9F8GZ75NUAW>
 
 ---
 
-## 🧭 Status
+## Status
 
-The extension is under active development. All IntelliSense surfaces are metadata‑driven and validated against the Cosmos DB SDK.
+The extension is under active development. All IntelliSense surfaces are metadata-driven and validated against the Cosmos DB SDK.
