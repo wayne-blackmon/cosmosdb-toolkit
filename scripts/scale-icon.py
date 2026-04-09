@@ -19,18 +19,28 @@ if img.mode != 'RGBA':
 # Create a new image with white background
 result = Image.new('RGBA', (1024, 1024), (255, 255, 255, 0))
 
-# Scale the image to 85% of the canvas size while maintaining aspect ratio
-scale_factor = 0.85
-new_size = int(1024 * scale_factor)
-img_scaled = img.resize((new_size, new_size), Image.Resampling.LANCZOS)
+# Remove transparent padding first so scale applies to visible artwork
+bbox = img.getbbox()
+if bbox:
+    img = img.crop(bbox)
 
-# Calculate position to center the scaled image
-offset = (1024 - new_size) // 2
+# Scale artwork to 90% of canvas while preserving original aspect ratio
+scale_factor = 0.90
+target_max = int(1024 * scale_factor)
+source_width, source_height = img.size
+scale = target_max / max(source_width, source_height)
+new_width = max(1, round(source_width * scale))
+new_height = max(1, round(source_height * scale))
+img_scaled = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+
+# Center the scaled image on the canvas
+x_offset = (1024 - new_width) // 2
+y_offset = (1024 - new_height) // 2
 
 # Paste the scaled image onto the result
-result.paste(img_scaled, (offset, offset), img_scaled)
+result.paste(img_scaled, (x_offset, y_offset), img_scaled)
 
 # Save back to the original location
 result.save(icon_path, 'PNG')
-print(f"Icon updated: scaled to {new_size}x{new_size} (85% of canvas)")
+print(f"Icon updated: scaled to {new_width}x{new_height} (90% max canvas, aspect preserved)")
 print(f"Saved to: {icon_path}")
