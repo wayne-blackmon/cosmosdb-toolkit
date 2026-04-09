@@ -14,7 +14,7 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
 
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "skipLibCheck": true,
 
     "types": ["node", "vscode"],
