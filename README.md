@@ -1,6 +1,5 @@
 # Cosmos DB Toolkit for VS Code
 
-![Build Status](https://github.com/wayneblackmon/cosmosdb-toolkit/actions/workflows/build.yaml/badge.svg)
 ![VS Code Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/wayne-blackmon.cosmosdb-toolkit)
 ![Installs](https://img.shields.io/visual-studio-marketplace/i/wayne-blackmon.cosmosdb-toolkit)
 ![Downloads](https://img.shields.io/visual-studio-marketplace/d/wayne-blackmon.cosmosdb-toolkit)
