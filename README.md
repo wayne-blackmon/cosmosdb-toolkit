@@ -1,9 +1,5 @@
 # Cosmos DB Toolkit for VS Code
 
-![VS Code Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/wayne-blackmon.cosmosdb-toolkit)
-![Installs](https://img.shields.io/visual-studio-marketplace/i/wayne-blackmon.cosmosdb-toolkit)
-![Downloads](https://img.shields.io/visual-studio-marketplace/d/wayne-blackmon.cosmosdb-toolkit)
-
 **The fastest way to write Azure Cosmos DB server-side JavaScript.**
 IntelliSense, signatures, snippets, diagnostics, and documentation all powered by a governed metadata engine.
 
